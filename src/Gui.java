@@ -32,7 +32,7 @@ public class Gui extends JFrame {
 
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		setTitle("LOL Log Reader");
+		setTitle("LOL Log Reader 1.1");
 		setSize(740, 450);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,9 +88,10 @@ public class Gui extends JFrame {
 
 		for (int i = 0; i < championSummaries.length; i++) {
 			data[i + 1][0] = championSummaries[i].getChampionName();
-			int knownWinLossGames = championSummaries[i].getWins() + championSummaries[i].getLosses();
+			double knownWinLossGames = championSummaries[i].getWins() + championSummaries[i].getLosses();
 			if (championSummaries[i].getWins() + championSummaries[i].getLosses() > 0) {
-				data[i + 1][1] = new Double(100d * ((double)championSummaries[i].getWins() / (double)knownWinLossGames));
+				data[i + 1][1] = new Double(100d * (championSummaries[i].getWins() / knownWinLossGames));
+				//data[i + 1][1] = new Double(100d * (championSummaries[i].getWins() / knownWinLossGames)) + " " + championSummaries[i].getWins() + "/(" + championSummaries[i].getWins() + "+" + championSummaries[i].getLosses() + ")";
 			}
 			total.incrementLossesBy(championSummaries[i].getLosses());
 			total.incrementWinsBy(championSummaries[i].getWins());
@@ -101,9 +102,10 @@ public class Gui extends JFrame {
 		}
 
 		data[0][0] = total.getChampionName();
-		int knownWinLossGames = total.getWins() + total.getLosses();
+		double knownWinLossGames = total.getWins() + total.getLosses();
 		if (total.getWins() + total.getLosses() > 0) {
-			data[0][1] = new Double(100d * ((double)total.getWins() / (double)knownWinLossGames));
+			data[0][1] = new Double(100d * (total.getWins() / knownWinLossGames));
+			//data[0][1] = new Double(100d * (total.getWins() / knownWinLossGames)) + " " + total.getWins() + "/(" + total.getWins() + "+" + total.getLosses() + ")";
 		}
 		data[0][2] = new Integer(total.getGamesPlayed());
 		data[0][3] = new Long(total.getMinutesPlayed());

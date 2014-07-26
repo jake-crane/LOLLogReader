@@ -11,21 +11,20 @@ import java.util.regex.Pattern;
 
 public class Game {
 
-	public static final int BLUE_TEAM = 100;
-	public static final int RED_TEAM = 200;
+	public static final int BLUE_TEAM = 100, RED_TEAM = 200;
 
 	private final ArrayList<Player> blueTeam = new ArrayList<Player>();
 	private final ArrayList<Player> redTeam = new ArrayList<Player>();
 	private Player localPlayer;
-	private int teamThatWon;
+	private int teamThatWon = -1;
 	private boolean botGame;
 	private int netUID;
 	private long startTime;
 	private long endTime;
 	private String map;
 
-	final Pattern spawningPattern = Pattern.compile("Spawning champion \\((.+)\\) with skinID \\d+ on team (\\d+) for clientID (-*\\d+) and summonername \\((.+)\\) \\(is (.+)\\)");
-	final Pattern netUIDPattern = Pattern.compile("netUID: (\\d) defaultname");
+	private static final Pattern spawningPattern = Pattern.compile("Spawning champion \\((.+)\\) with skinID \\d+ on team (\\d+) for clientID (-*\\d+) and summonername \\((.+)\\) \\(is (.+)\\)");
+	private static final Pattern netUIDPattern = Pattern.compile("netUID: (\\d) defaultname");
 
 	public Game(File file) throws IOException {
 
@@ -53,17 +52,30 @@ public class Game {
 						localPlayer = player;
 					}
 					if (player.getTeam() == BLUE_TEAM) {
-						blueTeam.add(player);
+						if (!listContainsPlayerWithName(blueTeam, player.getName())) {
+							blueTeam.add(player);
+						}
 					} else if (player.getTeam() == RED_TEAM) {
-						redTeam.add(player);
+						if (!listContainsPlayerWithName(redTeam, player.getName())) {
+							redTeam.add(player);
+						}
 					}
 				} else if (localPlayer != null && line.contains("exit_code")) {
-					 updateTeamsWinLoss(line);
+					updateTeamsWinLoss(line);
 				}
 			}
 		}
 	}
 	
+	public boolean listContainsPlayerWithName(ArrayList<Player> playerList, String name) {
+		for (Player player : playerList) {
+			if (player.getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void updateTeamsWinLoss(String line) {
 		if (line.contains("EXITCODE_WIN")) {
 			if (localPlayer.getTeam() == BLUE_TEAM) {
@@ -93,12 +105,12 @@ public class Game {
 					player.setGameResult(GameResult.LOST);
 				}
 			} else if (localPlayer.getTeam() == RED_TEAM) {
-				teamThatWon = RED_TEAM;
+				teamThatWon = BLUE_TEAM;
 				for (Player player : redTeam) {
-					player.setGameResult(GameResult.WON);
+					player.setGameResult(GameResult.LOST);
 				}
 				for (Player player : blueTeam) {
-					player.setGameResult(GameResult.LOST);
+					player.setGameResult(GameResult.WON);
 				}
 			}
 		}
@@ -159,9 +171,32 @@ public class Game {
 	public ArrayList<Player> getRedTeam() {
 		return redTeam;
 	}
-	
+
+	public Player getLocalPlayer() {
+		return localPlayer;
+	}
+
 	public long getGameLength() {
 		return TimeUnit.MILLISECONDS.toMinutes(endTime - startTime);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Blue Team:" + System.lineSeparator());
+		for (Player player : blueTeam) {
+			sb.append("    " + player.toString() + System.lineSeparator());
+		}
+		sb.append("Red Team:" + System.lineSeparator());
+		for (Player player : redTeam) {
+			sb.append("    " + player.toString() + System.lineSeparator());
+		}
+		sb.append("Local Player:" + System.lineSeparator());
+		sb.append("    " + localPlayer + System.lineSeparator());
+		sb.append("Winner: " + teamThatWon + System.lineSeparator());
+		sb.append("botGame: " + botGame + System.lineSeparator());
+		sb.append("map: " + map + System.lineSeparator());
+		return sb.toString();
 	}
 
 }

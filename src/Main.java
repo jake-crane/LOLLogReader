@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -29,20 +30,24 @@ public class Main {
 		return fc.getSelectedFile();
 	}
 
-	static int getBlueWins(ArrayList<Game> games) {
+	static int getTotalWinsOfTeam(ArrayList<Game> games, int team) {
 		int count = 0;
 		for (Game game : games) {
-			if (game.getTeamThatWon() == Game.BLUE_TEAM) {
+			if (game.getLocalPlayer() != null
+					&& game.getLocalPlayer().getTeam() == team
+					&& game.getLocalPlayer().getGameResult() == GameResult.WON) {
 				count++;
 			}
 		}
 		return count;
 	}
 
-	static int getRedWins(ArrayList<Game> games) {
+	static int getTotaLossesOfTeam(ArrayList<Game> games, int team) {
 		int count = 0;
 		for (Game game : games) {
-			if (game.getTeamThatWon() == Game.RED_TEAM) {
+			if (game.getLocalPlayer() != null 
+					&& game.getLocalPlayer().getTeam() == team
+					&& game.getLocalPlayer().getGameResult() == GameResult.LOST) {
 				count++;
 			}
 		}
@@ -71,12 +76,15 @@ public class Main {
 		ArrayList<Game> games = new ArrayList<Game>();
 
 		for (File file : usersLogDir.listFiles()) {
-			games.add(new Game(file));
+			//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
+			Game game = new Game(file);
+			games.add(game);
+			//System.out.println(game);
+			//System.out.println(file);
 			//break;
 		}
 
 		ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
-
 		for (Game game : games) {
 			for (Player player : game.getBlueTeam()) {
 				summarizePlayers(game, player, playerSummaries);
@@ -92,9 +100,15 @@ public class Main {
 
 		System.out.println("finished in " + (System.currentTimeMillis() - startTime));
 
-		System.out.println("blue game wins: " + getBlueWins(games));
-		System.out.println("red game wins: " + getRedWins(games));
-
+		int blueWins = getTotalWinsOfTeam(games, Game.BLUE_TEAM);
+		int blueLosses = getTotaLossesOfTeam(games, Game.BLUE_TEAM);
+		int redWins = getTotalWinsOfTeam(games, Game.RED_TEAM);
+		int redLosses = getTotaLossesOfTeam(games, Game.RED_TEAM);
+		int totalBlueGames = blueWins + blueLosses;
+		int totalRedGames = redWins + redLosses;
+		DecimalFormat df = new DecimalFormat("#.##");
+		System.out.println("blue game wins: " + blueWins + "/" + totalBlueGames + " " + df.format(100.0d * (double)blueWins / (double)totalBlueGames) + "%");
+		System.out.println("red game wins: " + redWins + "/" + totalRedGames + " " + df.format(100.0d * (double)redWins / (double)totalRedGames) + "%");
 
 	}
 
