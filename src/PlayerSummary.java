@@ -42,9 +42,4 @@ public class PlayerSummary {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return name.equals(((PlayerSummary)obj).getName());
-	}
-
 }

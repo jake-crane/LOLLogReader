@@ -3,7 +3,7 @@ public class ChampionSummary {
 	private String championName;
 	private int wins;
 	private int losses; //kept track of so undetermined outcomes can be calculated
-	private int gamesPlayed = 1;
+	private int gamesPlayed = 1; //assumed 1 game played
 	private long minutesPlayed;
 	private int lastTeamId;
 
@@ -74,8 +74,4 @@ public class ChampionSummary {
 		return lastTeamId;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return championName.equals(((ChampionSummary)obj).getChampionName());
-	}
 }

@@ -45,7 +45,7 @@ public class Main {
 	static int getTotaLossesOfTeam(ArrayList<Game> games, int team) {
 		int count = 0;
 		for (Game game : games) {
-			if (game.getLocalPlayer() != null 
+			if (game.getLocalPlayer() != null
 					&& game.getLocalPlayer().getTeam() == team
 					&& game.getLocalPlayer().getGameResult() == GameResult.LOST) {
 				count++;
@@ -113,13 +113,13 @@ public class Main {
 	}
 
 	public static void summarizePlayers(Game game, Player player, ArrayList<PlayerSummary> playerSummaries) {
-		int playerIndex = playerSummaries.indexOf(new PlayerSummary(player.getName()));
+		int playerIndex = indexOfPlayerSummaryWithName(playerSummaries, player.getName());
 		if (playerIndex == -1) { //user does not exist create new and add to list with champ
 			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
 			playerSummaries.add(new PlayerSummary(player.getName(), championSummary));
 		} else { //user found get list of champions and add new champion info
 			ArrayList<ChampionSummary> championsummaries = playerSummaries.get(playerIndex).getChampionSummaries();
-			int championIndex = championsummaries.indexOf(new ChampionSummary(player.getChampionName()));
+			int championIndex = indexOfChampionSummaryWithName(championsummaries, player.getChampionName());
 			if (championIndex == -1) { //champion does not exist for this user
 				ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
 				championsummaries.add(championSummary);
@@ -134,6 +134,24 @@ public class Main {
 				}
 			}
 		}
+	}
+
+	public static int indexOfPlayerSummaryWithName(ArrayList<PlayerSummary> playersummaries, String name) {
+		for (int i = 0; i < playersummaries.size(); i++) {
+			if (playersummaries.get(i).getName().equals(name)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static int indexOfChampionSummaryWithName(ArrayList<ChampionSummary> championsummaries, String name) {
+		for (int i = 0; i < championsummaries.size(); i++) {
+			if (championsummaries.get(i).getChampionName().equals(name)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 }
