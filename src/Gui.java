@@ -1,5 +1,5 @@
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,18 +30,21 @@ public class Gui extends JFrame {
 			e.printStackTrace();
 		}
 
-		setLayout(new FlowLayout(FlowLayout.LEFT));
+		setLayout(new GridBagLayout());	
+
+		GridBagConstraints c = new GridBagConstraints();
 
 		setTitle("LOL Log Reader 1.1");
-		setSize(740, 450);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		add(readingFilesLabel);
 
 		listScrollPane = new JScrollPane(jList);
 		listScrollPane.setVisible(false);
-		listScrollPane.setPreferredSize(new Dimension(listScrollPane.getPreferredSize().width, 423));
-		add(listScrollPane);
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = .25;
+		c.weighty = 100;
+		add(listScrollPane, c);
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -55,10 +58,9 @@ public class Gui extends JFrame {
 
 		tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setVisible(false);
-		add(tableScrollPane);
-
+		c.weightx = .75;
+		add(tableScrollPane, c);
 		setVisible(true);
-		pack();
 		setLocationRelativeTo(null);
 	}
 
