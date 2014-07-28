@@ -5,6 +5,10 @@ public class PlayerSummary {
 	
 	private String name;
 	private ArrayList<ChampionSummary> championSummaries = new ArrayList<ChampionSummary>();
+	private int blueTeamGames = 0;
+	private int redTeamGames = 0;
+	private int blueTeamWins = 0;
+	private int redTeamWins = 0;
 
 	public static Comparator<PlayerSummary> gamesPlayedComparator = new Comparator<PlayerSummary>() {
 
@@ -24,9 +28,10 @@ public class PlayerSummary {
 		this.name = name;
 	}
 
-	public PlayerSummary(String name, ChampionSummary firstFoundChampionSummary) {
-		this.name = name;
+	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary) {
+		this.name = player.getName();
 		championSummaries.add(firstFoundChampionSummary);
+		updateTeamInfo(player);
 	}
 
 	public String getName() {
@@ -35,6 +40,67 @@ public class PlayerSummary {
 
 	public ArrayList<ChampionSummary> getChampionSummaries() {
 		return championSummaries;
+	}
+	
+	/**
+	 * Info is not updated if game outcome is not known.
+	 * @param player
+	 */
+	public void updateTeamInfo(Player player) {
+		if (player.getGameResult() == GameResult.UNKNOWN) {
+			return;
+		}
+		if (player.getTeam() == Game.BLUE_TEAM) {
+			incrementBlueGamsPlayed();
+			if (player.getGameResult() == GameResult.WON) {
+				incrementblueTeamWins();
+			}
+		} else if (player.getTeam() == Game.RED_TEAM) {
+			incrementRedGamsPlayed();
+			if (player.getGameResult() == GameResult.WON) {
+				incrementredTeamWins();
+			}
+		}
+	}
+	
+	public int getRedTeamGames() {
+		return redTeamGames;
+	}
+	
+	public void incrementRedGamsPlayed() {
+		redTeamGames++;
+	}
+	
+	public void incrementRedGamsPlayedBy(int amount) {
+		redTeamGames += amount;
+	}
+	
+	public int getBlueTeamGames() {
+		return blueTeamGames;
+	}
+	
+	public void incrementBlueGamsPlayed() {
+		blueTeamGames++;
+	}
+	
+	public void incrementBlueGamsPlayedBy(int amount) {
+		blueTeamGames += amount;
+	}
+	
+	public void incrementblueTeamWins() {
+		blueTeamWins++;
+	}
+	
+	public void incrementredTeamWins() {
+		redTeamWins++;
+	}
+	
+	public int getBlueTeamWins() {
+		return blueTeamWins;
+	}
+	
+	public int getRedTeamWins() {
+		return redTeamWins;
 	}
 
 	@Override

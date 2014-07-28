@@ -1,9 +1,11 @@
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.DecimalFormat;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -14,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
+	
+	public static DecimalFormat df = new DecimalFormat("#.##");
 
 	private JLabel readingFilesLabel = new JLabel();
 	private JTable table = new JTable();
@@ -21,6 +25,8 @@ public class Gui extends JFrame {
 	private JScrollPane listScrollPane;
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
 	private PlayerSummary[] playerSummaries;
+	private JPanel panel = new JPanel();
+	private JLabel teamInfoLabel = new JLabel("<HTML>Blue Stats:<br>Red Stat:</HTML>");
 
 	public Gui() {
 
@@ -34,15 +40,29 @@ public class Gui extends JFrame {
 
 		GridBagConstraints c = new GridBagConstraints();
 
-		setTitle("LOL Log Reader 1.1");
+		setTitle("LOL Log Reader 1.2");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		add(readingFilesLabel);
 
+		panel.add(teamInfoLabel);
+		panel.setVisible(false);
+
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 1;
+		c.gridy = 1;
+		c.gridheight = 1;
+		c.weightx = 0;
+		add(panel, c);
+
 		listScrollPane = new JScrollPane(jList);
 		listScrollPane.setVisible(false);
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = .25;
+
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridheight = 2;
+		c.weightx = .30;
 		c.weighty = 100;
 		add(listScrollPane, c);
 
@@ -58,10 +78,16 @@ public class Gui extends JFrame {
 
 		tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setVisible(false);
-		c.weightx = .75;
+
+		c.gridx = 1;
+		c.gridy = 0;
+		c.gridheight = 1;
+		c.weightx = .50;
 		add(tableScrollPane, c);
+
 		setVisible(true);
 		setLocationRelativeTo(null);
+
 	}
 
 	public JLabel getreadingFilesLabel() {
@@ -72,6 +98,7 @@ public class Gui extends JFrame {
 		readingFilesLabel.setVisible(false);
 		listScrollPane.setVisible(true);
 		tableScrollPane.setVisible(true);
+		panel.setVisible(true);
 		this.playerSummaries = playerSummaries;
 		jList.setListData(playerSummaries);
 		jList.setSelectedIndex(0);
@@ -113,12 +140,12 @@ public class Gui extends JFrame {
 		data[0][3] = new Long(total.getMinutesPlayed());
 
 		DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-			
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-			
+
 			@Override
 			public Class<?> getColumnClass(int column) {
 				if (column == 1) {
@@ -135,6 +162,23 @@ public class Gui extends JFrame {
 		table.setModel(model);
 		table.getRowSorter().toggleSortOrder(2);
 		table.getRowSorter().toggleSortOrder(2);
+
+		teamInfoLabel.setText("<HTML>Blue Team Wins:"
+				+ "&nbsp;&nbsp;"
+				+ playerSummaries[jList.getSelectedIndex()].getBlueTeamWins()
+				+ "/" + playerSummaries[jList.getSelectedIndex()].getBlueTeamGames()
+				+ "&nbsp;&nbsp;"
+				+ df.format(100.0d * (double)playerSummaries[jList.getSelectedIndex()].getBlueTeamWins() / (double)playerSummaries[jList.getSelectedIndex()].getBlueTeamGames())
+				+ "%"
+				+ "<br>Red Team Wins:"
+				+ "&nbsp;&nbsp;"
+				+ playerSummaries[jList.getSelectedIndex()].getRedTeamWins()
+				+ "/" + playerSummaries[jList.getSelectedIndex()].getRedTeamGames()
+				+ "&nbsp;&nbsp;"
+				+ df.format(100.0d * (double)playerSummaries[jList.getSelectedIndex()].getRedTeamWins() / (double)playerSummaries[jList.getSelectedIndex()].getRedTeamGames())
+				+ "%"
+				+ "</HTML>");
+
 		pack();
 	}
 

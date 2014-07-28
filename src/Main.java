@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -28,30 +27,6 @@ public class Main {
 		fc.showOpenDialog(null);
 
 		return fc.getSelectedFile();
-	}
-
-	static int getTotalWinsOfTeam(ArrayList<Game> games, int team) {
-		int count = 0;
-		for (Game game : games) {
-			if (game.getLocalPlayer() != null
-					&& game.getLocalPlayer().getTeam() == team
-					&& game.getLocalPlayer().getGameResult() == GameResult.WON) {
-				count++;
-			}
-		}
-		return count;
-	}
-
-	static int getTotaLossesOfTeam(ArrayList<Game> games, int team) {
-		int count = 0;
-		for (Game game : games) {
-			if (game.getLocalPlayer() != null
-					&& game.getLocalPlayer().getTeam() == team
-					&& game.getLocalPlayer().getGameResult() == GameResult.LOST) {
-				count++;
-			}
-		}
-		return count;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -87,10 +62,10 @@ public class Main {
 		ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
 		for (Game game : games) {
 			for (Player player : game.getBlueTeam()) {
-				summarizePlayers(game, player, playerSummaries);
+				summarizePlayer(game, player, playerSummaries);
 			}
 			for (Player player : game.getRedTeam()) {
-				summarizePlayers(game, player, playerSummaries);
+				summarizePlayer(game, player, playerSummaries);
 			}
 		}
 
@@ -98,27 +73,20 @@ public class Main {
 
 		gui.setPlayerSummaries(playerSummaries.toArray(new PlayerSummary[0]));
 
-		System.out.println("finished in " + (System.currentTimeMillis() - startTime));
-
-		int blueWins = getTotalWinsOfTeam(games, Game.BLUE_TEAM);
-		int blueLosses = getTotaLossesOfTeam(games, Game.BLUE_TEAM);
-		int redWins = getTotalWinsOfTeam(games, Game.RED_TEAM);
-		int redLosses = getTotaLossesOfTeam(games, Game.RED_TEAM);
-		int totalBlueGames = blueWins + blueLosses;
-		int totalRedGames = redWins + redLosses;
-		DecimalFormat df = new DecimalFormat("#.##");
-		System.out.println("blue game wins: " + blueWins + "/" + totalBlueGames + " " + df.format(100.0d * (double)blueWins / (double)totalBlueGames) + "%");
-		System.out.println("red game wins: " + redWins + "/" + totalRedGames + " " + df.format(100.0d * (double)redWins / (double)totalRedGames) + "%");
+		System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
 
 	}
 
-	public static void summarizePlayers(Game game, Player player, ArrayList<PlayerSummary> playerSummaries) {
+	public static void summarizePlayer(Game game, Player player, ArrayList<PlayerSummary> playerSummaries) {
 		int playerIndex = indexOfPlayerSummaryWithName(playerSummaries, player.getName());
 		if (playerIndex == -1) { //user does not exist create new and add to list with champ
 			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
-			playerSummaries.add(new PlayerSummary(player.getName(), championSummary));
+			PlayerSummary playerSummary = new PlayerSummary(player, championSummary);
+			playerSummaries.add(playerSummary);
 		} else { //user found get list of champions and add new champion info
-			ArrayList<ChampionSummary> championsummaries = playerSummaries.get(playerIndex).getChampionSummaries();
+			PlayerSummary playerSummary = playerSummaries.get(playerIndex);
+			playerSummary.updateTeamInfo(player);
+			ArrayList<ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
 			int championIndex = indexOfChampionSummaryWithName(championsummaries, player.getChampionName());
 			if (championIndex == -1) { //champion does not exist for this user
 				ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
