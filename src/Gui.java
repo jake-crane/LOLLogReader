@@ -8,7 +8,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -29,12 +28,6 @@ public class Gui extends JFrame {
 	private JLabel teamInfoLabel = new JLabel("<HTML>Blue Stats:<br>Red Stat:</HTML>");
 
 	public Gui() {
-
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		setLayout(new GridBagLayout());	
 

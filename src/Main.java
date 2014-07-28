@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 
 public class Main {
@@ -30,6 +31,12 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		File usersLogDir = getUsersLogDirectory();
 
