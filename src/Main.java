@@ -31,7 +31,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
-		
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
@@ -68,11 +68,13 @@ public class Main {
 
 		ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
 		for (Game game : games) {
-			for (Player player : game.getBlueTeam()) {
-				summarizePlayer(game, player, playerSummaries);
-			}
-			for (Player player : game.getRedTeam()) {
-				summarizePlayer(game, player, playerSummaries);
+			if (!game.isBotGame()) {
+				for (Player player : game.getBlueTeam()) {
+					summarizePlayer(game, player, playerSummaries);
+				}
+				for (Player player : game.getRedTeam()) {
+					summarizePlayer(game, player, playerSummaries);
+				}
 			}
 		}
 
