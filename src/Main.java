@@ -13,10 +13,10 @@ public class Main {
 	public static final File ALTERNATE_WINDOWS_LOG_DIR = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs");
 	public static final File MAC_LOG_DIR = new File("/Applications/Riot Games/League of Legends/Logs/Game - R3d Logs");//untested
 
-	public static final File[] logDirs = {WINDOWS_DEFAULT_LOG_DIR, MAC_LOG_DIR, ALTERNATE_WINDOWS_LOG_DIR};
+	public static final File[] LOG_DIRS = {WINDOWS_DEFAULT_LOG_DIR, MAC_LOG_DIR, ALTERNATE_WINDOWS_LOG_DIR};
 
 	public static File getUsersLogDirectory() {
-		for (File logDir : logDirs) {
+		for (File logDir : LOG_DIRS) {
 			if (logDir.exists()) {
 				return logDir;
 			}
