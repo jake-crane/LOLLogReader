@@ -1,6 +1,8 @@
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,12 +13,13 @@ import javax.swing.JTable;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
-	
-	public static DecimalFormat df = new DecimalFormat("#.##");
+
+	public static final DecimalFormat df = new DecimalFormat("#.##");
 
 	private JLabel readingFilesLabel = new JLabel();
 	private JTable table = new JTable();
@@ -26,6 +29,7 @@ public class Gui extends JFrame {
 	private PlayerSummary[] playerSummaries;
 	private JPanel panel = new JPanel();
 	private JLabel teamInfoLabel = new JLabel("<HTML>Blue Stats:<br>Red Stat:</HTML>");
+	private TableColumnAdjuster tca = new TableColumnAdjuster(table);
 
 	public Gui() {
 
@@ -33,7 +37,7 @@ public class Gui extends JFrame {
 
 		GridBagConstraints c = new GridBagConstraints();
 
-		setTitle("LOL Log Reader 1.2");
+		setTitle("LOL Log Reader");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		add(readingFilesLabel);
@@ -69,6 +73,9 @@ public class Gui extends JFrame {
 		table.setAutoCreateRowSorter(true);
 		table.setFocusable(false);
 
+		tca.setColumnHeaderIncluded(true);
+		tca.setOnlyAdjustLarger(true);
+
 		tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setVisible(false);
 
@@ -102,8 +109,8 @@ public class Gui extends JFrame {
 
 		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().toArray(new ChampionSummary[0]);
 
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played"};
-		Object[][] data = new Object[championSummaries.length + 1][columnNames.length];
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "Last Seen"};
+		final Object[][] data = new Object[championSummaries.length + 1][columnNames.length];
 
 		ChampionSummary total = new ChampionSummary("Total");
 		total.incrementGamesPlayedBy(-1); //remove the assumed played game
@@ -121,6 +128,10 @@ public class Gui extends JFrame {
 			total.incrementGamesPlayedBy(championSummaries[i].getGamesPlayed());
 			data[i + 1][3] = new Long(championSummaries[i].getMinutesPlayed());
 			total.incrementMinutesPlayedBy(championSummaries[i].getMinutesPlayed());
+			data[i + 1][4] = new Date(championSummaries[i].getLastSeen());
+
+			total.updateLastSeen(championSummaries[i].getLastSeen());
+
 		}
 
 		data[0][0] = total.getChampionName();
@@ -131,6 +142,7 @@ public class Gui extends JFrame {
 		}
 		data[0][2] = new Integer(total.getGamesPlayed());
 		data[0][3] = new Long(total.getMinutesPlayed());
+		data[0][4] = new Date(total.getLastSeen());
 
 		DefaultTableModel model = new DefaultTableModel(data, columnNames) {
 
@@ -141,18 +153,23 @@ public class Gui extends JFrame {
 
 			@Override
 			public Class<?> getColumnClass(int column) {
-				if (column == 1) {
-					return Double.class;
-				} else if (column == 2) {
-					return Integer.class;
-				} else if (column == 3) {
-					return Long.class;
+				if (data[0][column] != null) {
+					return data[0][column].getClass();
 				}
 				return String.class;
 			}
 		};
 
 		table.setModel(model);
+		table.getColumnModel().getColumn(4).setCellRenderer(
+				new DefaultTableCellRenderer() {
+					@Override
+					public void setValue(Object value) {
+						setText((value == null) ? "" : new SimpleDateFormat(" MM/dd/y").format(value));
+					}
+				}
+		);
+
 		table.getRowSorter().toggleSortOrder(2);
 		table.getRowSorter().toggleSortOrder(2);
 
@@ -172,7 +189,9 @@ public class Gui extends JFrame {
 				+ "%"
 				+ "</HTML>");
 
+
 		pack();
+		tca.adjustColumns();
 	}
 
 }

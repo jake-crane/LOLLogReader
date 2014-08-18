@@ -7,7 +7,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-
 public class Main {
 
 	public static final File WINDOWS_DEFAULT_LOG_DIR = new File("C:\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs");
@@ -56,9 +55,10 @@ public class Main {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Game> games = new ArrayList<Game>();
-
+		
 		for (File file : usersLogDir.listFiles()) {
 			//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
+
 			Game game = new Game(file);
 			games.add(game);
 			//System.out.println(game);
@@ -78,7 +78,7 @@ public class Main {
 			}
 		}
 
-		Collections.sort(playerSummaries, PlayerSummary.gamesPlayedComparator);
+		Collections.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
 
 		gui.setPlayerSummaries(playerSummaries.toArray(new PlayerSummary[0]));
 
@@ -89,8 +89,8 @@ public class Main {
 	public static void summarizePlayer(Game game, Player player, ArrayList<PlayerSummary> playerSummaries) {
 		int playerIndex = indexOfPlayerSummaryWithName(playerSummaries, player.getName());
 		if (playerIndex == -1) { //user does not exist create new and add to list with champ
-			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
-			PlayerSummary playerSummary = new PlayerSummary(player, championSummary);
+			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
+			PlayerSummary playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
 			playerSummaries.add(playerSummary);
 		} else { //user found get list of champions and add new champion info
 			PlayerSummary playerSummary = playerSummaries.get(playerIndex);
@@ -98,12 +98,13 @@ public class Main {
 			ArrayList<ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
 			int championIndex = indexOfChampionSummaryWithName(championsummaries, player.getChampionName());
 			if (championIndex == -1) { //champion does not exist for this user
-				ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game.getGameLength(), player.getTeam(), player.getGameResult());
+				ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
 				championsummaries.add(championSummary);
 			} else { //user has used this champion before
 				ChampionSummary championSummary = championsummaries.get(championIndex);
 				championSummary.incrementGamesPlayed();
 				championSummary.incrementMinutesPlayedBy(game.getGameLength());
+				championSummary.updateLastSeen(game.getEndTime());
 				if (player.getGameResult() == GameResult.WON) {
 					championSummary.incrementWins();
 				} else if (player.getGameResult() == GameResult.LOST) {

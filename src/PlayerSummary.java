@@ -10,10 +10,9 @@ public class PlayerSummary {
 	private int blueTeamWins = 0;
 	private int redTeamWins = 0;
 
-	public static Comparator<PlayerSummary> gamesPlayedComparator = new Comparator<PlayerSummary>() {
-
+	public static final Comparator<PlayerSummary> GAMES_PLAYED_COMPARATOR = new Comparator<PlayerSummary>() {
+		@Override
 		public int compare(PlayerSummary p1, PlayerSummary p2) {
-
 			if (p1.championSummaries.size() < p2.getChampionSummaries().size()) {
 				return 1;
 			} else if (p1.championSummaries.size() > p2.getChampionSummaries().size()) {
@@ -21,14 +20,13 @@ public class PlayerSummary {
 			}
 			return 0;
 		}
-
 	};
 
 	public PlayerSummary(String name) {
 		this.name = name;
 	}
 
-	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary) {
+	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary, long lastSeen) {
 		this.name = player.getName();
 		championSummaries.add(firstFoundChampionSummary);
 		updateTeamInfo(player);

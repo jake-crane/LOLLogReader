@@ -23,8 +23,8 @@ public class Game {
 	private long endTime;
 	private String map;
 
-	private static final Pattern spawningPattern = Pattern.compile("Spawning champion \\((.+)\\) with skinID \\d+ on team (\\d+) for clientID (-*\\d+) and summonername \\((.+)\\) \\(is (.+)\\)");
-	private static final Pattern netUIDPattern = Pattern.compile("netUID: (\\d) defaultname");
+	private static final Pattern SPAWNING_PATTERN = Pattern.compile("Spawning champion \\((.+)\\) with skinID \\d+ on team (\\d+) for clientID (-*\\d+) and summonername \\((.+)\\) \\(is (.+)\\)");
+	private static final Pattern NETUID_PATTERN = Pattern.compile("netUID: (\\d) defaultname");
 
 	public Game(File file) throws IOException {
 
@@ -35,8 +35,8 @@ public class Game {
 		try (BufferedReader input = new BufferedReader(new FileReader(file))) {
 			String line = input.readLine();// read time line
 			while ((line = input.readLine()) != null) {
-				Matcher netUIDMatcher = netUIDPattern.matcher(line);
-				Matcher spawningtestMatcher = spawningPattern.matcher(line);
+				Matcher netUIDMatcher = NETUID_PATTERN.matcher(line);
+				Matcher spawningtestMatcher = SPAWNING_PATTERN.matcher(line);
 				if (netUIDMatcher.find()) {
 					netUID = Integer.parseInt(netUIDMatcher.group(1));
 				} else if (spawningtestMatcher.find()) {
