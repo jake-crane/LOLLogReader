@@ -74,7 +74,7 @@ public class Gui extends JFrame {
 		table.setFocusable(false);
 
 		tca.setColumnHeaderIncluded(true);
-		tca.setOnlyAdjustLarger(true);
+		//tca.setOnlyAdjustLarger(true);
 
 		tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setVisible(false);
@@ -109,7 +109,7 @@ public class Gui extends JFrame {
 
 		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().toArray(new ChampionSummary[0]);
 
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "Last Seen"};
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen"};
 		final Object[][] data = new Object[championSummaries.length + 1][columnNames.length];
 
 		ChampionSummary total = new ChampionSummary("Total");
@@ -128,9 +128,12 @@ public class Gui extends JFrame {
 			total.incrementGamesPlayedBy(championSummaries[i].getGamesPlayed());
 			data[i + 1][3] = new Long(championSummaries[i].getMinutesPlayed());
 			total.incrementMinutesPlayedBy(championSummaries[i].getMinutesPlayed());
-			data[i + 1][4] = new Date(championSummaries[i].getLastSeen());
+			data[i + 1][4] = new Date(championSummaries[i].getFirstSeen());
+			data[i + 1][5] = new Date(championSummaries[i].getLastSeen());
 
-			total.updateLastSeen(championSummaries[i].getLastSeen());
+			//update both first and last seen
+			total.updateFirstLastSeen(championSummaries[i].getFirstSeen());
+			total.updateFirstLastSeen(championSummaries[i].getLastSeen());
 
 		}
 
@@ -142,15 +145,14 @@ public class Gui extends JFrame {
 		}
 		data[0][2] = new Integer(total.getGamesPlayed());
 		data[0][3] = new Long(total.getMinutesPlayed());
-		data[0][4] = new Date(total.getLastSeen());
+		data[0][4] = new Date(total.getFirstSeen());
+		data[0][5] = new Date(total.getLastSeen());
 
 		DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-
 			@Override
 			public Class<?> getColumnClass(int column) {
 				if (data[0][column] != null) {
@@ -161,14 +163,17 @@ public class Gui extends JFrame {
 		};
 
 		table.setModel(model);
-		table.getColumnModel().getColumn(4).setCellRenderer(
-				new DefaultTableCellRenderer() {
-					@Override
-					public void setValue(Object value) {
-						setText((value == null) ? "" : new SimpleDateFormat(" MM/dd/y").format(value));
+
+		for (int i = 4; i < 6; i++) {
+			table.getColumnModel().getColumn(i).setCellRenderer(
+					new DefaultTableCellRenderer() {
+						@Override
+						public void setValue(Object value) {
+							setText((value == null) ? "" : new SimpleDateFormat(" MMM dd, y").format(value));
+						}
 					}
-				}
-		);
+			);
+		}
 
 		table.getRowSorter().toggleSortOrder(2);
 		table.getRowSorter().toggleSortOrder(2);

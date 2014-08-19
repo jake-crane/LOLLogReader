@@ -104,7 +104,7 @@ public class Main {
 				ChampionSummary championSummary = championsummaries.get(championIndex);
 				championSummary.incrementGamesPlayed();
 				championSummary.incrementMinutesPlayedBy(game.getGameLength());
-				championSummary.updateLastSeen(game.getEndTime());
+				championSummary.updateFirstLastSeen(game.getEndTime());
 				if (player.getGameResult() == GameResult.WON) {
 					championSummary.incrementWins();
 				} else if (player.getGameResult() == GameResult.LOST) {

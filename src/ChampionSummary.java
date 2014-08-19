@@ -6,6 +6,7 @@ public class ChampionSummary {
 	private int gamesPlayed = 1; //assumed 1 game played
 	private long minutesPlayed;
 	private int lastTeamId;
+	private long firstSeen = Long.MAX_VALUE;
 	private long lastSeen = 0;
 
 	public ChampionSummary(String championName) {
@@ -21,7 +22,7 @@ public class ChampionSummary {
 		} else if (lastGameResult == GameResult.LOST) {
 			losses++;
 		}
-		updateLastSeen(game.getEndTime());
+		updateFirstLastSeen(game.getEndTime());
 	}
 
 	public String getChampionName() {
@@ -77,15 +78,22 @@ public class ChampionSummary {
 	}
 	
 	/**
-	 * Only sets lastSeen if the new lastSeen is more recent.
-	 * @param lastSeen
+	 * Sets lastSeen if the timeSeen is more recent or firstSeen if timeSeen is less recent.
+	 * @param timeSeen
 	 */
-	public void updateLastSeen(long lastSeen) {
-		if (lastSeen > this.lastSeen) {
-			this.lastSeen = lastSeen;
+	public void updateFirstLastSeen(long timeSeen) {
+		if (timeSeen > this.lastSeen) {
+			this.lastSeen = timeSeen;
+		}
+		if (timeSeen < this.firstSeen) {
+			this.firstSeen = timeSeen;
 		}
 	}
-	
+
+	public long getFirstSeen() {
+		return firstSeen;
+	}
+
 	public long getLastSeen() {
 		return lastSeen;
 	}
