@@ -91,7 +91,9 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
 		TableCellRenderer renderer = tableColumn.getHeaderRenderer();
 
 		if (renderer == null) {
-			renderer = table.getTableHeader().getDefaultRenderer();
+			if (table.getTableHeader() != null) {
+				renderer = table.getTableHeader().getDefaultRenderer();
+			}
 		}
 
 		Component c = renderer.getTableCellRendererComponent(table, value, false, false, -1, column);
