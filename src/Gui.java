@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
 
-	public static final DecimalFormat df = new DecimalFormat("#.00");
+	public static final DecimalFormat df = new DecimalFormat("#.##");
 
 	private JLabel readingFilesLabel = new JLabel();
 	private TableWithFooter twf = new TableWithFooter();
