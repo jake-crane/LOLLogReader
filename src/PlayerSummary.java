@@ -8,7 +8,9 @@ public class PlayerSummary {
 	private int blueTeamGames = 0;
 	private int redTeamGames = 0;
 	private int blueTeamWins = 0;
+	private int blueTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
 	private int redTeamWins = 0;
+	private int redTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
 
 	public static final Comparator<PlayerSummary> GAMES_PLAYED_COMPARATOR = new Comparator<PlayerSummary>() {
 		@Override
@@ -39,31 +41,33 @@ public class PlayerSummary {
 	public ArrayList<ChampionSummary> getChampionSummaries() {
 		return championSummaries;
 	}
-	
-	/**
-	 * Info is not updated if game outcome is not known.
-	 * @param player
-	 */
+
 	public void updateTeamInfo(Player player) {
-		if (player.getGameResult() == GameResult.UNKNOWN) {
-			return;
-		}
 		if (player.getTeam() == Game.BLUE_TEAM) {
 			incrementBlueGamsPlayed();
 			if (player.getGameResult() == GameResult.WON) {
 				incrementblueTeamWins();
+			} else if (player.getGameResult() == GameResult.LOST) {
+				incrementBlueTeamLosses();
 			}
 		} else if (player.getTeam() == Game.RED_TEAM) {
 			incrementRedGamsPlayed();
 			if (player.getGameResult() == GameResult.WON) {
-				incrementredTeamWins();
+				incrementRedTeamWins();
+			} else if (player.getGameResult() == GameResult.LOST) {
+				incrementRedTeamLosses();
 			}
 		}
 	}
 	
-	public int getRedTeamGames() {
-		return redTeamGames;
-	}
+	/**
+	 * Outcome of all games may no be known. <p>
+	 * See also getRedTeamsGamesWithKnownOutcome()
+	 * @return
+	 */
+	//public int getRedTeamGames() {
+		//return redTeamGames;
+	//}
 	
 	public void incrementRedGamsPlayed() {
 		redTeamGames++;
@@ -73,9 +77,14 @@ public class PlayerSummary {
 		redTeamGames += amount;
 	}
 	
-	public int getBlueTeamGames() {
-		return blueTeamGames;
-	}
+	/**
+	 * Outcome of all games may no be known. <p>
+	 * See also getBlueTeamsGamesWithKnownOutcome()
+	 * @return
+	 */
+	//public int getBlueTeamGames() {
+		//return blueTeamGames;
+	//}
 	
 	public void incrementBlueGamsPlayed() {
 		blueTeamGames++;
@@ -89,16 +98,40 @@ public class PlayerSummary {
 		blueTeamWins++;
 	}
 	
-	public void incrementredTeamWins() {
+	public void incrementBlueTeamLosses() {
+		blueTeamLosses++;
+	}
+	
+	public void incrementRedTeamWins() {
 		redTeamWins++;
+	}
+	
+	public void incrementRedTeamLosses() {
+		redTeamLosses++;
 	}
 	
 	public int getBlueTeamWins() {
 		return blueTeamWins;
 	}
 	
+	public int getBlueTeamLosses() {
+		return blueTeamLosses;
+	}
+	
+	public int getBlueTeamsGamesWithKnownOutcome() {
+		return blueTeamWins + blueTeamLosses;
+	}
+	
 	public int getRedTeamWins() {
 		return redTeamWins;
+	}
+	
+	public int getRedTeamLosses() {
+		return redTeamLosses;
+	}
+	
+	public int getRedTeamsGamesWithKnownOutcome() {
+		return redTeamWins + redTeamLosses;
 	}
 
 	@Override

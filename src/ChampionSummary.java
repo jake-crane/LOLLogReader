@@ -1,9 +1,12 @@
 public class ChampionSummary {
 
 	private String championName;
-	private int wins;
-	private int losses; //kept track of so undetermined outcomes can be calculated
-	private int gamesPlayed = 1; //assumed 1 game played
+	private int blueTeamGames = 0;
+	private int redTeamGames = 0;
+	private int blueTeamWins = 0;
+	private int blueTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
+	private int redTeamWins = 0;
+	private int redTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
 	private long minutesPlayed;
 	private int lastTeamId;
 	private long firstSeen = Long.MAX_VALUE;
@@ -13,15 +16,11 @@ public class ChampionSummary {
 		this.championName = championName;
 	}
 
-	public ChampionSummary(String championName, Game game, int lastTeamId, GameResult lastGameResult) {
+	public ChampionSummary(String championName, Game game, int lastTeamId, GameResult gameResult) {
 		this.championName = championName;
 		this.minutesPlayed = game.getGameLength();
 		this.lastTeamId = lastTeamId;
-		if (lastGameResult == GameResult.WON) {
-			wins++;
-		} else if (lastGameResult == GameResult.LOST) {
-			losses++;
-		}
+		updateTeamInfo(lastTeamId, gameResult);
 		updateFirstLastSeen(game.getEndTime());
 	}
 
@@ -29,40 +28,116 @@ public class ChampionSummary {
 		return championName;
 	}
 
-	public int getWins() {
-		return wins;
+	public void incrementBlueTeamWins() {
+		blueTeamWins++;
 	}
 
-	public void incrementWins() {
-		wins++;
+	public void incrementBlueTeamWinsBy(int wins) {
+		this.blueTeamWins += wins;
+	}
+	
+	public void incrementRedTeamWins() {
+		redTeamWins++;
+	}
+	
+	public void incrementRedTeamWinsBy(int wins) {
+		this.redTeamWins += wins;
 	}
 
-	public void incrementWinsBy(int wins) {
-		this.wins += wins;
+	public void incrementBlueTeamLosses() {
+		blueTeamLosses++;
 	}
 
-	public int getLosses() {
-		return losses;
+	public void incrementBlueTeamLossesBy(int losses) {
+		this.blueTeamLosses += losses;
+	}
+	
+	public void incrementRedTeamLosses() {
+		redTeamLosses++;
 	}
 
-	public void incrementLosses() {
-		losses++;
+	public void incrementRedTeamLossesBy(int losses) {
+		this.redTeamLosses += losses;
 	}
-
-	public void incrementLossesBy(int losses) {
-		this.losses += losses;
+	
+	public void updateTeamInfo(Player player) {
+		if (player.getTeam() == Game.BLUE_TEAM) {
+			incrementBlueTeamGamesPlayed();
+			if (player.getGameResult() == GameResult.WON) {
+				incrementBlueTeamWins();
+			} else if (player.getGameResult() == GameResult.LOST) {
+				incrementBlueTeamLosses();
+			}
+		} else if (player.getTeam() == Game.RED_TEAM) {
+			incrementRedTeamGamesPlayed();
+			if (player.getGameResult() == GameResult.WON) {
+				incrementRedTeamWins();
+			} else if (player.getGameResult() == GameResult.LOST) {
+				incrementRedTeamLosses();
+			}
+		}
+	}
+	
+	public void updateTeamInfo(int team, GameResult gameResult) {
+		if (team == Game.BLUE_TEAM) {
+			incrementBlueTeamGamesPlayed();
+			if (gameResult == GameResult.WON) {
+				incrementBlueTeamWins();
+			} else if (gameResult == GameResult.LOST) {
+				incrementBlueTeamLosses();
+			}
+		} else if (team == Game.RED_TEAM) {
+			incrementRedTeamGamesPlayed();
+			if (gameResult == GameResult.WON) {
+				incrementRedTeamWins();
+			} else if (gameResult == GameResult.LOST) {
+				incrementRedTeamLosses();
+			}
+		}
 	}
 
 	public int getGamesPlayed() {
-		return gamesPlayed;
+		return redTeamGames + blueTeamGames;
 	}
 
-	public void incrementGamesPlayed() {
-		gamesPlayed++;
+	public void incrementBlueTeamGamesPlayed() {
+		blueTeamGames++;
+	}
+	
+	public void incrementRedTeamGamesPlayed() {
+		blueTeamGames++;
 	}
 
-	public void incrementGamesPlayedBy(int gamesPlayed) {
-		this.gamesPlayed += gamesPlayed;
+	public void incrementBlueGamesPlayedBy(int gamesPlayed) {
+		this.blueTeamGames += gamesPlayed;
+	}
+	
+	public void incrementRedGamesPlayedBy(int gamesPlayed) {
+		this.redTeamGames += gamesPlayed;
+	}
+	
+	public int getBlueTeamGames() {
+		return blueTeamGames;
+	}
+	
+	public int getBlueTeamWins() {
+		return blueTeamWins;
+	}
+	
+	public int getBlueTeamLosses() {
+		return blueTeamLosses;
+	}
+	
+	public int getRedTeamGames() {
+		return redTeamGames;
+	}
+	
+	public int getRedTeamWins() {
+		return redTeamWins;
+	}
+	
+	public int getRedTeamLosses() {
+		return redTeamLosses;
 	}
 
 	public long getMinutesPlayed() {
@@ -96,6 +171,22 @@ public class ChampionSummary {
 
 	public long getLastSeen() {
 		return lastSeen;
+	}
+	
+	public int totalWins() {
+		return blueTeamWins + redTeamWins;
+	}
+	
+	public int totalLosses() {
+		return blueTeamLosses + redTeamLosses;
+	}
+	
+	public int blueTeamGamesWithKnownOutcome() {
+		return blueTeamWins + blueTeamLosses;
+	}
+	
+	public int redTeamGamesWithKnownOutcome() {
+		return redTeamWins + redTeamLosses;
 	}
 
 }

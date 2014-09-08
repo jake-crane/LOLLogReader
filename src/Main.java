@@ -38,9 +38,12 @@ public class Main {
 		}
 
 		File usersLogDir = getUsersLogDirectory();
-
-		if (usersLogDir == null || !usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName())) {
-			System.err.println("unable to find Game - R3d Logs Directory");
+		//FIXME R3d Logs can not be selected on Linux
+		if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName()) 
+						&& !usersLogDir.getName().equals(MAC_LOG_DIR.getName()))) {
+			System.out.println("You selected '" + usersLogDir.getName() + "'");
+			System.out.println("You must select '" + WINDOWS_DEFAULT_LOG_DIR.getName() + "' or "
+					+ "'" + MAC_LOG_DIR.getName() + "'");
 			JOptionPane.showMessageDialog(null,
 					"You did not Select a \"Game - R3d Logs\" Folder",
 					"Error",
@@ -102,14 +105,9 @@ public class Main {
 				championsummaries.add(championSummary);
 			} else { //user has used this champion before
 				ChampionSummary championSummary = championsummaries.get(championIndex);
-				championSummary.incrementGamesPlayed();
+				championSummary.updateTeamInfo(player);
 				championSummary.incrementMinutesPlayedBy(game.getGameLength());
 				championSummary.updateFirstLastSeen(game.getEndTime());
-				if (player.getGameResult() == GameResult.WON) {
-					championSummary.incrementWins();
-				} else if (player.getGameResult() == GameResult.LOST) {
-					championSummary.incrementLosses();
-				}
 			}
 		}
 	}

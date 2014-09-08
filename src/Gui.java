@@ -1,4 +1,3 @@
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
@@ -8,7 +7,6 @@ import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -23,43 +21,18 @@ public class Gui extends JFrame {
 
 	private JLabel readingFilesLabel = new JLabel();
 	private TableWithFooter twf = new TableWithFooter();
-	private JScrollPane tableScrollPane;
 	private JScrollPane listScrollPane;
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
 	private PlayerSummary[] playerSummaries;
-	private JPanel panel = new JPanel();
-	private JLabel teamInfoLabel = new JLabel("<HTML>Blue Stats:<br>Red Stat:</HTML>");
 
 	public Gui() {
 
-		setLayout(new GridBagLayout());	
-
-		GridBagConstraints c = new GridBagConstraints();
+		setLayout(new GridBagLayout());
 
 		setTitle("LOL Log Reader");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		add(readingFilesLabel);
-
-		panel.add(teamInfoLabel);
-		panel.setVisible(false);
-
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 1;
-		c.gridy = 2;
-		c.gridheight = 1;
-		c.weightx = 0;
-		add(panel, c);
-
-		listScrollPane = new JScrollPane(jList);
-		listScrollPane.setVisible(false);
-
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridheight = 2;
-		c.weightx = .30;
-		c.weighty = 100;
-		add(listScrollPane, c);
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -68,21 +41,33 @@ public class Gui extends JFrame {
 			}
 		});
 
+		listScrollPane = new JScrollPane(jList);
+		listScrollPane.setVisible(false);
+
+		GridBagConstraints c1 = new GridBagConstraints();
+		c1.fill = GridBagConstraints.BOTH;
+		c1.gridx = 0;
+		c1.gridy = 0;
+		c1.gridheight = 2;
+		c1.weightx = .3;
+		c1.weighty = 1;
+		add(listScrollPane, c1);
+
 		twf.setAutoCreateRowSorter(true);
-		twf.setFocusable(false);
 
-		tableScrollPane = new JScrollPane(twf);
+		twf.setVisible(false);
 
-		tableScrollPane.setVisible(false);
+		GridBagConstraints c2 = new GridBagConstraints();
+		c2.fill = GridBagConstraints.BOTH;
+		c2.gridx = 1;
+		c2.gridy = 0;
+		c2.weightx = .7;
+		c2.weighty = 1;
+		c2.gridheight = 1;
+		add(twf, c2);
 
-		c.gridx = 1;
-		c.gridy = 0;
-		c.gridheight = 1;
-		c.weightx = .50;
-		add(tableScrollPane, c);
-
-		setVisible(true);
 		setLocationRelativeTo(null);
+		setVisible(true);
 
 	}
 
@@ -93,8 +78,7 @@ public class Gui extends JFrame {
 	public void setPlayerSummaries(PlayerSummary[] playerSummaries) {
 		readingFilesLabel.setVisible(false);
 		listScrollPane.setVisible(true);
-		tableScrollPane.setVisible(true);
-		panel.setVisible(true);
+		twf.setVisible(true);
 		this.playerSummaries = playerSummaries;
 		jList.setListData(playerSummaries);
 		jList.setSelectedIndex(0);
@@ -105,28 +89,47 @@ public class Gui extends JFrame {
 
 		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().toArray(new ChampionSummary[0]);
 
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen"};
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen",
+				"Blue Wins", "Red Wins"};
 		final Object[][] data = new Object[championSummaries.length][columnNames.length];
 
 		ChampionSummary total = new ChampionSummary("Total");
-		total.incrementGamesPlayedBy(-1); //remove the assumed played game
 
 		for (int i = 0; i < championSummaries.length; i++) {
 			data[i][0] = championSummaries[i].getChampionName();
-			double knownWinLossGames = championSummaries[i].getWins() + championSummaries[i].getLosses();
-			if (championSummaries[i].getWins() + championSummaries[i].getLosses() > 0) {
-				data[i][1] = new Double(100d * (championSummaries[i].getWins() / knownWinLossGames));
-				//data[i][1] = new Double(100d * (championSummaries[i].getWins() / knownWinLossGames)) + " " + championSummaries[i].getWins() + "/(" + championSummaries[i].getWins() + "+" + championSummaries[i].getLosses() + ")";
+			double knownWinLossGames = championSummaries[i].totalWins() + championSummaries[i].totalLosses();
+			if (knownWinLossGames > 0) {
+				data[i][1] = new Double(100d * (championSummaries[i].totalWins() / knownWinLossGames));
 			}
-			total.incrementLossesBy(championSummaries[i].getLosses());
-			total.incrementWinsBy(championSummaries[i].getWins());
+			total.incrementBlueTeamLossesBy(championSummaries[i].getBlueTeamLosses());
+			total.incrementRedTeamLossesBy(championSummaries[i].getRedTeamLosses());
+			total.incrementBlueTeamWinsBy(championSummaries[i].getBlueTeamWins());
+			total.incrementRedTeamWinsBy(championSummaries[i].getRedTeamWins());
+
 			data[i][2] = new Integer(championSummaries[i].getGamesPlayed());
-			total.incrementGamesPlayedBy(championSummaries[i].getGamesPlayed());
+			total.incrementBlueGamesPlayedBy(championSummaries[i].getBlueTeamGames());
+			total.incrementRedGamesPlayedBy(championSummaries[i].getRedTeamGames());
+
 			data[i][3] = new Long(championSummaries[i].getMinutesPlayed());
 			total.incrementMinutesPlayedBy(championSummaries[i].getMinutesPlayed());
 			data[i][4] = new Date(championSummaries[i].getFirstSeen());
 			data[i][5] = new Date(championSummaries[i].getLastSeen());
-
+			if (championSummaries[i].blueTeamGamesWithKnownOutcome() > 0) {
+				data[i][6] = championSummaries[i].getBlueTeamWins()
+						+ "/" 
+						+ championSummaries[i].blueTeamGamesWithKnownOutcome()
+						+ "  ("
+						+ df.format(100d * ((double)championSummaries[i].getBlueTeamWins() / (double)championSummaries[i].blueTeamGamesWithKnownOutcome()))
+						+ "%)";
+			}
+			if (championSummaries[i].redTeamGamesWithKnownOutcome() > 0) {
+				data[i][7] = championSummaries[i].getRedTeamWins()
+						+ "/" 
+						+ championSummaries[i].redTeamGamesWithKnownOutcome()
+						+ "  ("
+						+ df.format(100d * ((double)championSummaries[i].getRedTeamWins() / (double)championSummaries[i].redTeamGamesWithKnownOutcome()))
+						+ "%)";
+			}
 			//update both first and last seen
 			total.updateFirstLastSeen(championSummaries[i].getFirstSeen());
 			total.updateFirstLastSeen(championSummaries[i].getLastSeen());
@@ -148,15 +151,31 @@ public class Gui extends JFrame {
 		};
 
 		Object[][] footerData = new Object[1][data[0].length];
-		double knownWinLossGames = total.getWins() + total.getLosses();
+		double knownWinLossGames = total.totalWins() + total.totalLosses();
 		footerData[0][0] = total.getChampionName();
-		if (total.getWins() + total.getLosses() > 0) {
-			footerData[0][1] = new Double(100d * (total.getWins() / knownWinLossGames));
+		if (knownWinLossGames > 0) {
+			footerData[0][1] = new Double(100d * (total.totalWins() / knownWinLossGames));
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
 		footerData[0][3] = new Long(total.getMinutesPlayed());
 		footerData[0][4] = new Date(total.getFirstSeen());
 		footerData[0][5] = new Date(total.getLastSeen());
+		if (total.blueTeamGamesWithKnownOutcome() > 0) {
+			footerData[0][6] = total.getBlueTeamWins()
+					+ "/" 
+					+ total.blueTeamGamesWithKnownOutcome()
+					+ "  ("
+					+ df.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
+					+ "%)";
+		}
+		if (total.redTeamGamesWithKnownOutcome() > 0) {
+			footerData[0][7] = total.getRedTeamWins()
+					+ "/" 
+					+ total.redTeamGamesWithKnownOutcome()
+					+ "  ("
+					+ df.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))
+					+ "%)";
+		}
 
 		DefaultTableModel FooterModel = new DefaultTableModel(footerData, columnNames) {
 			@Override
@@ -192,23 +211,9 @@ public class Gui extends JFrame {
 		twf.getTable().getRowSorter().toggleSortOrder(2);
 		twf.getTable().getRowSorter().toggleSortOrder(2);
 
-		teamInfoLabel.setText("<HTML>Blue Team Wins:"
-				+ "&nbsp;&nbsp;"
-				+ playerSummaries[jList.getSelectedIndex()].getBlueTeamWins()
-				+ "/" + playerSummaries[jList.getSelectedIndex()].getBlueTeamGames()
-				+ "&nbsp;&nbsp;"
-				+ df.format(100.0d * (double)playerSummaries[jList.getSelectedIndex()].getBlueTeamWins() / (double)playerSummaries[jList.getSelectedIndex()].getBlueTeamGames())
-				+ "%"
-				+ "<br>Red Team Wins:"
-				+ "&nbsp;&nbsp;"
-				+ playerSummaries[jList.getSelectedIndex()].getRedTeamWins()
-				+ "/" + playerSummaries[jList.getSelectedIndex()].getRedTeamGames()
-				+ "&nbsp;&nbsp;"
-				+ df.format(100.0d * (double)playerSummaries[jList.getSelectedIndex()].getRedTeamWins() / (double)playerSummaries[jList.getSelectedIndex()].getRedTeamGames())
-				+ "%"
-				+ "</HTML>");
-
-
+		twf.adjustColumns();
+		pack();
+		twf.adjustColumns();
 		pack();
 	}
 
