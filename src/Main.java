@@ -38,7 +38,7 @@ public class Main {
 		}
 
 		File usersLogDir = getUsersLogDirectory();
-		//FIXME R3d Logs can not be selected on Linux
+
 		if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName()) 
 						&& !usersLogDir.getName().equals(MAC_LOG_DIR.getName()))) {
 			System.out.println("You selected '" + usersLogDir.getName() + "'");
