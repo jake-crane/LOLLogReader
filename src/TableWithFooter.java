@@ -76,7 +76,6 @@ public class TableWithFooter extends JPanel {
 	}
 
 	public void adjustColumns() {
-		System.out.println("adjustColumns");
 		TableColumnModel tcm = table.getColumnModel();
 		for (int i = 0; i < tcm.getColumnCount(); i++) {
 			adjustColumn(i);
