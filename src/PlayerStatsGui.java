@@ -20,7 +20,6 @@ public class PlayerStatsGui extends JFrame {
 
 	public static final DecimalFormat DF = new DecimalFormat("#.##");
 
-	private JLabel readingFilesLabel = new JLabel();
 	private TableWithFooter twf = new TableWithFooter();
 	private JScrollPane listScrollPane;
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
@@ -32,8 +31,6 @@ public class PlayerStatsGui extends JFrame {
 
 		setTitle("LOL Log Reader");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-		add(readingFilesLabel);
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -54,7 +51,6 @@ public class PlayerStatsGui extends JFrame {
 		});
 
 		listScrollPane = new JScrollPane(jList);
-		listScrollPane.setVisible(false);
 
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.BOTH;
@@ -67,8 +63,6 @@ public class PlayerStatsGui extends JFrame {
 
 		twf.setAutoCreateRowSorter(true);
 
-		twf.setVisible(false);
-
 		GridBagConstraints c2 = new GridBagConstraints();
 		c2.fill = GridBagConstraints.BOTH;
 		c2.gridx = 1;
@@ -77,9 +71,6 @@ public class PlayerStatsGui extends JFrame {
 		c2.weighty = 1;
 		c2.gridheight = 1;
 		add(twf, c2);
-
-		setLocationRelativeTo(null);
-		setVisible(true);
 
 	}
 	
@@ -93,14 +84,7 @@ public class PlayerStatsGui extends JFrame {
 		return null;
 	}
 
-	public JLabel getreadingFilesLabel() {
-		return readingFilesLabel;
-	}
-
 	public void setPlayerSummaries(PlayerSummary[] playerSummaries) {
-		readingFilesLabel.setVisible(false);
-		listScrollPane.setVisible(true);
-		twf.setVisible(true);
 		this.playerSummaries = playerSummaries;
 		jList.setListData(playerSummaries);
 		jList.setSelectedIndex(0);
