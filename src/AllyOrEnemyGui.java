@@ -1,5 +1,4 @@
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.SimpleDateFormat;
@@ -11,14 +10,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 
 @SuppressWarnings("serial")
-public class AllyAndEnemyGui extends JFrame {
+public class AllyOrEnemyGui extends JFrame {
 
 	private TableWithFooter twf = new TableWithFooter();
 
@@ -28,7 +26,7 @@ public class AllyAndEnemyGui extends JFrame {
 
 	private boolean ally;
 
-	public AllyAndEnemyGui(boolean ally, String playerName, ChampionSummary myChampionSummary) {
+	public AllyOrEnemyGui(boolean ally, String playerName, ChampionSummary myChampionSummary) {
 		setLayout(new GridBagLayout());
 
 		setTitle((ally ? "Ally": "Enamy")

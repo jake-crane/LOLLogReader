@@ -48,8 +48,8 @@ public class PlayerStatsGui extends JFrame {
 				ChampionSummary championSummary = getChampionSummaryWithChampionName(
 						jList.getSelectedValue().getChampionSummaries(),
 						(String)twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0));
-				new AllyAndEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
-				new AllyAndEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
+				new AllyOrEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
+				new AllyOrEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
 			}
 		});
 
