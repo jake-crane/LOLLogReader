@@ -40,8 +40,12 @@ public class PlayerStatsGui extends JFrame {
 		});
 		
 		twf.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			long lastSelected = System.currentTimeMillis();
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				//limit this event to once every 1500 milliseconds
+				if (System.currentTimeMillis() - lastSelected < 1500) return;
+				lastSelected = System.currentTimeMillis();
 				ChampionSummary championSummary = getChampionSummaryWithChampionName(
 						jList.getSelectedValue().getChampionSummaries(),
 						(String)twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0));
