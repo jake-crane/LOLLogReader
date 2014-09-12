@@ -1,5 +1,6 @@
 import java.io.File;
-import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -30,7 +31,9 @@ public class Main {
 		return fc.getSelectedFile();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
+		
+		try {
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -102,6 +105,13 @@ public class Main {
 		gui.dispose();
 
 		System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			JOptionPane.showMessageDialog(null, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 
 	}
 

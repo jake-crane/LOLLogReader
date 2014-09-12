@@ -6,10 +6,10 @@ import javax.swing.WindowConstants;
 
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
-	
+
 	private JLabel readingFilesLabel = new JLabel("Reading Log Files...");
 	private JLabel percentLabel = new JLabel("0%");
-	
+
 	public Gui() {
 		setLayout(new GridBagLayout());
 
@@ -23,5 +23,5 @@ public class Gui extends JFrame {
 	public JLabel getPercentLabel() {
 		return percentLabel;
 	}
-	
+
 }
