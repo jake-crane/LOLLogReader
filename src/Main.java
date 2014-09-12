@@ -108,6 +108,7 @@ public class Main {
 				championSummary.updateTeamInfo(player);
 				championSummary.incrementMinutesPlayedBy(game.getGameLength());
 				championSummary.updateFirstLastSeen(game.getEndTime());
+				championSummary.addGame(game);
 			}
 		}
 	}

@@ -2,6 +2,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JFrame;
@@ -17,7 +18,7 @@ import javax.swing.table.DefaultTableModel;
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
 
-	public static final DecimalFormat df = new DecimalFormat("#.##");
+	public static final DecimalFormat DF = new DecimalFormat("#.##");
 
 	private JLabel readingFilesLabel = new JLabel();
 	private TableWithFooter twf = new TableWithFooter();
@@ -38,6 +39,17 @@ public class Gui extends JFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				updateChampionTable();
+			}
+		});
+		
+		twf.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				ChampionSummary championSummary = getChampionSummaryWithChampionName(
+						jList.getSelectedValue().getChampionSummaries(),
+						(String)twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0));
+				new AllyAndEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
+				new AllyAndEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
 			}
 		});
 
@@ -69,6 +81,16 @@ public class Gui extends JFrame {
 		setLocationRelativeTo(null);
 		setVisible(true);
 
+	}
+	
+	public ChampionSummary getChampionSummaryWithChampionName(ArrayList<ChampionSummary> championSummaries,
+			String name) {
+		for (ChampionSummary championSummary : championSummaries) {
+			if (championSummary.getChampionName().equals(name)) {
+				return championSummary;
+			}
+		}
+		return null;
 	}
 
 	public JLabel getreadingFilesLabel() {
@@ -119,7 +141,7 @@ public class Gui extends JFrame {
 						+ "/" 
 						+ championSummaries[i].blueTeamGamesWithKnownOutcome()
 						+ "  ("
-						+ df.format(100d * ((double)championSummaries[i].getBlueTeamWins() / (double)championSummaries[i].blueTeamGamesWithKnownOutcome()))
+						+ DF.format(100d * ((double)championSummaries[i].getBlueTeamWins() / (double)championSummaries[i].blueTeamGamesWithKnownOutcome()))
 						+ "%)";
 			}
 			if (championSummaries[i].redTeamGamesWithKnownOutcome() > 0) {
@@ -127,7 +149,7 @@ public class Gui extends JFrame {
 						+ "/" 
 						+ championSummaries[i].redTeamGamesWithKnownOutcome()
 						+ "  ("
-						+ df.format(100d * ((double)championSummaries[i].getRedTeamWins() / (double)championSummaries[i].redTeamGamesWithKnownOutcome()))
+						+ DF.format(100d * ((double)championSummaries[i].getRedTeamWins() / (double)championSummaries[i].redTeamGamesWithKnownOutcome()))
 						+ "%)";
 			}
 			//update both first and last seen
@@ -165,7 +187,7 @@ public class Gui extends JFrame {
 					+ "/" 
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
-					+ df.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
+					+ DF.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
 					+ "%)";
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
@@ -173,23 +195,23 @@ public class Gui extends JFrame {
 					+ "/" 
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
-					+ df.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))
+					+ DF.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))
 					+ "%)";
 		}
 
-		DefaultTableModel FooterModel = new DefaultTableModel(footerData, columnNames) {
+		DefaultTableModel footerModel = new DefaultTableModel(footerData, columnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
 
-		twf.setModel(model, FooterModel);
+		twf.setModel(model, footerModel);
 
 		DefaultTableCellRenderer doubleCellRenderer = new DefaultTableCellRenderer() {
 			@Override
 			public void setValue(Object value) {
-				setText((value == null) ? "" : df.format(value));
+				setText((value == null) ? "" : DF.format(value));
 			}
 		};
 

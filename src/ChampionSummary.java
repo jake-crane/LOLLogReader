@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class ChampionSummary {
 
 	private String championName;
@@ -11,6 +13,8 @@ public class ChampionSummary {
 	private int lastTeamId;
 	private long firstSeen = Long.MAX_VALUE;
 	private long lastSeen = 0;
+	
+	private ArrayList<Game> games = new ArrayList<Game>();
 
 	public ChampionSummary(String championName) {
 		this.championName = championName;
@@ -22,6 +26,7 @@ public class ChampionSummary {
 		this.lastTeamId = lastTeamId;
 		updateTeamInfo(lastTeamId, gameResult);
 		updateFirstLastSeen(game.getEndTime());
+		games.add(game);
 	}
 
 	public String getChampionName() {
@@ -172,21 +177,29 @@ public class ChampionSummary {
 	public long getLastSeen() {
 		return lastSeen;
 	}
-	
+
 	public int totalWins() {
 		return blueTeamWins + redTeamWins;
 	}
-	
+
 	public int totalLosses() {
 		return blueTeamLosses + redTeamLosses;
 	}
-	
+
 	public int blueTeamGamesWithKnownOutcome() {
 		return blueTeamWins + blueTeamLosses;
 	}
-	
+
 	public int redTeamGamesWithKnownOutcome() {
 		return redTeamWins + redTeamLosses;
+	}
+
+	public boolean addGame(Game game) {
+		return games.add(game);
+	}
+	
+	public ArrayList<Game> getGames() {
+		return games;
 	}
 
 }
