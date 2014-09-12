@@ -89,7 +89,7 @@ public class AllyAndEnemyGui extends JFrame {
 						+ "/" 
 						+ championSummary.blueTeamGamesWithKnownOutcome()
 						+ "  ("
-						+ Gui.DF.format(100d * ((double)championSummary.getBlueTeamWins() / (double)championSummary.blueTeamGamesWithKnownOutcome()))
+						+ PlayerStatsGui.DF.format(100d * ((double)championSummary.getBlueTeamWins() / (double)championSummary.blueTeamGamesWithKnownOutcome()))
 						+ "%)";
 			}
 			if (championSummary.redTeamGamesWithKnownOutcome() > 0) {
@@ -97,7 +97,7 @@ public class AllyAndEnemyGui extends JFrame {
 						+ "/" 
 						+ championSummary.redTeamGamesWithKnownOutcome()
 						+ "  ("
-						+ Gui.DF.format(100d * ((double)championSummary.getRedTeamWins() / (double)championSummary.redTeamGamesWithKnownOutcome()))
+						+ PlayerStatsGui.DF.format(100d * ((double)championSummary.getRedTeamWins() / (double)championSummary.redTeamGamesWithKnownOutcome()))
 						+ "%)";
 			}
 			//update both first and last seen
@@ -135,7 +135,7 @@ public class AllyAndEnemyGui extends JFrame {
 					+ "/" 
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
-					+ Gui.DF.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
+					+ PlayerStatsGui.DF.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
 					+ "%)";
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
@@ -143,7 +143,7 @@ public class AllyAndEnemyGui extends JFrame {
 					+ "/" 
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
-					+ Gui.DF.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))
+					+ PlayerStatsGui.DF.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))
 					+ "%)";
 		}
 
@@ -159,7 +159,7 @@ public class AllyAndEnemyGui extends JFrame {
 		DefaultTableCellRenderer doubleCellRenderer = new DefaultTableCellRenderer() {
 			@Override
 			public void setValue(Object value) {
-				setText((value == null) ? "" : Gui.DF.format(value));
+				setText((value == null) ? "" : PlayerStatsGui.DF.format(value));
 			}
 		};
 

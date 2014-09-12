@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
-public class Gui extends JFrame {
+public class PlayerStatsGui extends JFrame {
 
 	public static final DecimalFormat DF = new DecimalFormat("#.##");
 
@@ -26,7 +26,7 @@ public class Gui extends JFrame {
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
 	private PlayerSummary[] playerSummaries;
 
-	public Gui() {
+	public PlayerStatsGui() {
 
 		setLayout(new GridBagLayout());
 

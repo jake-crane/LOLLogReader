@@ -51,7 +51,7 @@ public class Main {
 			System.exit(1);
 		}
 
-		Gui gui = new Gui();
+		PlayerStatsGui gui = new PlayerStatsGui();
 		gui.getreadingFilesLabel().setText("Reading Log Files...");
 		gui.pack();
 
