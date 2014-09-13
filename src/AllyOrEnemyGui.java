@@ -178,8 +178,8 @@ public class AllyOrEnemyGui extends JFrame {
 
 		twf.setAutoCreateRowSorter(true);
 
-		twf.getTable().getRowSorter().toggleSortOrder(2);
-		twf.getTable().getRowSorter().toggleSortOrder(2);
+		twf.getTable().getRowSorter().toggleSortOrder(1);
+		twf.getTable().getRowSorter().toggleSortOrder(1);
 
 		twf.adjustColumns();
 		pack();
