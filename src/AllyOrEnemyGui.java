@@ -222,7 +222,6 @@ public class AllyOrEnemyGui extends JFrame {
 		return map;
 	}
 
-	@SuppressWarnings("serial")
 	class ChampionCellRenderer extends JLabel implements ListCellRenderer {
 
 		public ChampionCellRenderer() {

@@ -191,6 +191,13 @@ public class PlayerStatsGui extends JFrame {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
+			@Override
+			public Class<?> getColumnClass(int column) {
+				if (data[0][column] != null) {
+					return data[0][column].getClass();
+				}
+				return String.class;
+			}
 		};
 
 		twf.setModel(model, footerModel);
