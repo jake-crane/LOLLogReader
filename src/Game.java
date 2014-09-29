@@ -65,6 +65,9 @@ public class Game {
 				}
 			}
 		}
+		if (getBlueTeam().size() + getRedTeam().size() == 1) {
+			botGame = true;
+		}
 	}
 	
 	public boolean listContainsPlayerWithName(ArrayList<Player> playerList, String name) {
