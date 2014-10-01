@@ -32,79 +32,79 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		
-		try {
 
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		File usersLogDir = getUsersLogDirectory();
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-		if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName()) 
-						&& !usersLogDir.getName().equals(MAC_LOG_DIR.getName()))) {
-			System.out.println("You selected '" + usersLogDir.getName() + "'");
-			System.out.println("You must select '" + WINDOWS_DEFAULT_LOG_DIR.getName() + "' or "
-					+ "'" + MAC_LOG_DIR.getName() + "'");
-			JOptionPane.showMessageDialog(null,
-					"You did not Select a \"Game - R3d Logs\" Folder",
-					"Error",
-					JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}
-		
-		Gui gui = new Gui();
-		gui.setSize(300, 75);
-		gui.setLocationRelativeTo(null);
-		gui.setVisible(true);
+			File usersLogDir = getUsersLogDirectory();
 
-		long startTime = System.currentTimeMillis();
+			if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName()) 
+					&& !usersLogDir.getName().equals(MAC_LOG_DIR.getName()))) {
+				System.out.println("You selected '" + usersLogDir.getName() + "'");
+				System.out.println("You must select '" + WINDOWS_DEFAULT_LOG_DIR.getName() + "' or "
+						+ "'" + MAC_LOG_DIR.getName() + "'");
+				JOptionPane.showMessageDialog(null,
+						"You did not Select a \"Game - R3d Logs\" Folder",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}
 
-		ArrayList<Game> games = new ArrayList<Game>();
-		
-		File[] logFiles = usersLogDir.listFiles();
-		
-		JLabel guiLabel = gui.getPercentLabel();
-		for (int i = 0; i < logFiles.length; i++) {
-			//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
+			Gui gui = new Gui();
+			gui.setSize(300, 75);
+			gui.setLocationRelativeTo(null);
+			gui.setVisible(true);
 
-			Game game = new Game(logFiles[i]);
-			games.add(game);
-			float precent = (i + 1f) / logFiles.length * 100f;
-			guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
-			//System.out.println(game);
-			//System.out.println(file);
-			//break;
-		}
+			long startTime = System.currentTimeMillis();
 
-		ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
-		for (Game game : games) {
-			if (!game.isBotGame()) {
-				for (Player player : game.getBlueTeam()) {
-					summarizePlayer(game, player, playerSummaries);
-				}
-				for (Player player : game.getRedTeam()) {
-					summarizePlayer(game, player, playerSummaries);
+			ArrayList<Game> games = new ArrayList<Game>();
+
+			File[] logFiles = usersLogDir.listFiles();
+
+			JLabel guiLabel = gui.getPercentLabel();
+			for (int i = 0; i < logFiles.length; i++) {
+				//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
+
+				Game game = new Game(logFiles[i]);
+				games.add(game);
+				float precent = (i + 1f) / logFiles.length * 100f;
+				guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
+				//System.out.println(game);
+				//System.out.println(file);
+				//break;
+			}
+
+			ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
+			for (Game game : games) {
+				if (!game.isBotGame()) {
+					for (Player player : game.getBlueTeam()) {
+						summarizePlayer(game, player, playerSummaries);
+					}
+					for (Player player : game.getRedTeam()) {
+						summarizePlayer(game, player, playerSummaries);
+					}
 				}
 			}
-		}
 
-		Collections.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+			Collections.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
 
-		PlayerStatsGui playerStatsGui = new PlayerStatsGui();
-		playerStatsGui.setPlayerSummaries(playerSummaries.toArray(new PlayerSummary[0]));
-		playerStatsGui.pack();
-		playerStatsGui.setLocationRelativeTo(null);
+			PlayerStatsGui playerStatsGui = new PlayerStatsGui();
+			playerStatsGui.setPlayerSummaries(playerSummaries.toArray(new PlayerSummary[0]));
+			playerStatsGui.pack();
+			playerStatsGui.setLocationRelativeTo(null);
 
-		gui.setVisible(false);
+			gui.setVisible(false);
 
-		playerStatsGui.setVisible(true);
+			playerStatsGui.setVisible(true);
 
-		gui.dispose();
+			gui.dispose();
 
-		System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
+			System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
 
 		} catch (Exception e) {
 			e.printStackTrace();
