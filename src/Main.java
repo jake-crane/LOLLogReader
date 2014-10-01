@@ -2,7 +2,9 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -79,7 +81,7 @@ public class Main {
 				//break;
 			}
 
-			ArrayList<PlayerSummary> playerSummaries = new ArrayList<PlayerSummary>();
+			HashMap<String, PlayerSummary> playerSummaries = new HashMap<String, PlayerSummary>();
 			for (Game game : games) {
 				if (!game.isBotGame()) {
 					for (Player player : game.getBlueTeam()) {
@@ -91,10 +93,13 @@ public class Main {
 				}
 			}
 
-			Collections.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+			PlayerSummary[] playerSummaryArray = playerSummaries.values().toArray(new PlayerSummary[0]);
+			
+			Arrays.sort(playerSummaryArray, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+			
 
 			PlayerStatsGui playerStatsGui = new PlayerStatsGui();
-			playerStatsGui.setPlayerSummaries(playerSummaries.toArray(new PlayerSummary[0]));
+			playerStatsGui.setPlayerSummaries(playerSummaryArray);
 			playerStatsGui.pack();
 			playerStatsGui.setLocationRelativeTo(null);
 
@@ -115,46 +120,26 @@ public class Main {
 
 	}
 
-	public static void summarizePlayer(Game game, Player player, ArrayList<PlayerSummary> playerSummaries) {
-		int playerIndex = indexOfPlayerSummaryWithName(playerSummaries, player.getName());
-		if (playerIndex == -1) { //user does not exist create new and add to list with champ
+	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
+		PlayerSummary playerSummary = playerSummaries.get(player.getName());
+		if (playerSummary == null) { //user does not exist create new and add to list with champ
 			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-			PlayerSummary playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
-			playerSummaries.add(playerSummary);
+			playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
+			playerSummaries.put(playerSummary.getName(), playerSummary);
 		} else { //user found get list of champions and add new champion info
-			PlayerSummary playerSummary = playerSummaries.get(playerIndex);
 			playerSummary.updateTeamInfo(player);
-			ArrayList<ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
-			int championIndex = indexOfChampionSummaryWithName(championsummaries, player.getChampionName());
-			if (championIndex == -1) { //champion does not exist for this user
-				ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-				championsummaries.add(championSummary);
+			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
+			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
+			if (championSummary == null) { //champion does not exist for this user
+				championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
+				championsummaries.put(championSummary.getChampionName(), championSummary);
 			} else { //user has used this champion before
-				ChampionSummary championSummary = championsummaries.get(championIndex);
 				championSummary.updateTeamInfo(player);
 				championSummary.incrementMinutesPlayedBy(game.getGameLength());
 				championSummary.updateFirstLastSeen(game.getEndTime());
 				championSummary.addGame(game);
 			}
 		}
-	}
-
-	public static int indexOfPlayerSummaryWithName(ArrayList<PlayerSummary> playersummaries, String name) {
-		for (int i = 0; i < playersummaries.size(); i++) {
-			if (playersummaries.get(i).getName().equals(name)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public static int indexOfChampionSummaryWithName(ArrayList<ChampionSummary> championsummaries, String name) {
-		for (int i = 0; i < championsummaries.size(); i++) {
-			if (championsummaries.get(i).getChampionName().equals(name)) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 }

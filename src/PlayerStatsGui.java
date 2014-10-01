@@ -45,9 +45,9 @@ public class PlayerStatsGui extends JFrame {
 				//limit this event to once every 1500 milliseconds
 				if (System.currentTimeMillis() - lastSelected < 1500) return;
 				lastSelected = System.currentTimeMillis();
-				ChampionSummary championSummary = getChampionSummaryWithChampionName(
-						jList.getSelectedValue().getChampionSummaries(),
-						(String)twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0));
+				ChampionSummary championSummary = jList.getSelectedValue().getChampionSummaries().get(
+						twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0)
+						);
 				new AllyOrEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
 				new AllyOrEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
 			}
@@ -96,7 +96,7 @@ public class PlayerStatsGui extends JFrame {
 
 	public void updateChampionTable() {
 
-		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().toArray(new ChampionSummary[0]);
+		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().values().toArray(new ChampionSummary[0]);
 
 		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen",
 				"Blue Wins", "Red Wins"};

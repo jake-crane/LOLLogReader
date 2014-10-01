@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class PlayerSummary {
 	
 	private String name;
-	private ArrayList<ChampionSummary> championSummaries = new ArrayList<ChampionSummary>();
+	private HashMap<String, ChampionSummary> championSummaries = new HashMap<String, ChampionSummary>();
 	private int blueTeamGames = 0;
 	private int redTeamGames = 0;
 	private int blueTeamWins = 0;
@@ -30,7 +31,7 @@ public class PlayerSummary {
 
 	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary, long lastSeen) {
 		this.name = player.getName();
-		championSummaries.add(firstFoundChampionSummary);
+		championSummaries.put(firstFoundChampionSummary.getChampionName(),firstFoundChampionSummary);
 		updateTeamInfo(player);
 	}
 
@@ -38,7 +39,7 @@ public class PlayerSummary {
 		return name;
 	}
 
-	public ArrayList<ChampionSummary> getChampionSummaries() {
+	public HashMap<String, ChampionSummary> getChampionSummaries() {
 		return championSummaries;
 	}
 
