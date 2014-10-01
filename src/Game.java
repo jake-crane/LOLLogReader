@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Game {
-	
+
 	public static final int SUMMONERS_RIFT_ID = 1;
 
 	public static final int BLUE_TEAM = 100, RED_TEAM = 200;
@@ -65,18 +65,18 @@ public class Game {
 						}
 					}
 				} else if (mapMatcher.find()) {
-						mapId = Integer.parseInt(mapMatcher.group(1));
+					mapId = Integer.parseInt(mapMatcher.group(1));
 				} else if (localPlayer != null && line.contains("exit_code")) {
 					updateTeamsWinLoss(line);
 				}
-				
+
 			}
 		}
 		if (getBlueTeam().size() + getRedTeam().size() == 1) {
 			botGame = true;
 		}
 	}
-	
+
 	public boolean listContainsPlayerWithName(ArrayList<Player> playerList, String name) {
 		for (Player player : playerList) {
 			if (player.getName().equals(name)) {
@@ -202,6 +202,7 @@ public class Game {
 		sb.append("Winner: " + teamThatWon + System.lineSeparator());
 		sb.append("botGame: " + botGame + System.lineSeparator());
 		sb.append("mapId: " + mapId + System.lineSeparator());
+		sb.append("Game Length: " + getGameLength() + " Minutes" + System.lineSeparator());
 		return sb.toString();
 	}
 
