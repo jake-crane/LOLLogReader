@@ -64,16 +64,17 @@ public class Main {
 
 			long startTime = System.currentTimeMillis();
 
-			ArrayList<Game> games = new ArrayList<Game>();
 
 			File[] logFiles = usersLogDir.listFiles();
 
+			Game[] games = new Game[logFiles.length];
+			
 			JLabel guiLabel = gui.getPercentLabel();
 			for (int i = 0; i < logFiles.length; i++) {
 				//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
 
 				Game game = new Game(logFiles[i]);
-				games.add(game);
+				games[i] = game;
 				float precent = (i + 1f) / logFiles.length * 100f;
 				guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
 				//System.out.println(game);
