@@ -10,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Game {
+	
+	public static final int SUMMONERS_RIFT_ID = 1;
 
 	public static final int BLUE_TEAM = 100, RED_TEAM = 200;
 
@@ -21,10 +23,11 @@ public class Game {
 	private int netUID;
 	private long startTime;
 	private long endTime;
-	private String map;
+	private int mapId = -1;
 
 	private static final Pattern SPAWNING_PATTERN = Pattern.compile("Spawning champion \\((.+)\\) with skinID \\d+ on team (\\d+) for clientID (-*\\d+) and summonername \\((.+)\\) \\(is (.+)\\)");
 	private static final Pattern NETUID_PATTERN = Pattern.compile("netUID: (\\d) defaultname");
+	private static final Pattern MAP_PATTERN = Pattern.compile("zip file: Map(\\d+).zip");
 
 	public Game(File file) throws IOException {
 
@@ -37,6 +40,7 @@ public class Game {
 			while ((line = input.readLine()) != null) {
 				Matcher netUIDMatcher = NETUID_PATTERN.matcher(line);
 				Matcher spawningtestMatcher = SPAWNING_PATTERN.matcher(line);
+				Matcher mapMatcher = MAP_PATTERN.matcher(line);
 				if (netUIDMatcher.find()) {
 					netUID = Integer.parseInt(netUIDMatcher.group(1));
 				} else if (spawningtestMatcher.find()) {
@@ -60,9 +64,12 @@ public class Game {
 							redTeam.add(player);
 						}
 					}
+				} else if (mapMatcher.find()) {
+						mapId = Integer.parseInt(mapMatcher.group(1));
 				} else if (localPlayer != null && line.contains("exit_code")) {
 					updateTeamsWinLoss(line);
 				}
+				
 			}
 		}
 		if (getBlueTeam().size() + getRedTeam().size() == 1) {
@@ -159,12 +166,8 @@ public class Game {
 		this.endTime = endTime;
 	}
 
-	public String getMap() {
-		return map;
-	}
-
-	public void setMap(String map) {
-		this.map = map;
+	public int getMapId() {
+		return mapId;
 	}
 
 	public ArrayList<Player> getBlueTeam() {
@@ -198,7 +201,7 @@ public class Game {
 		sb.append("    " + localPlayer + System.lineSeparator());
 		sb.append("Winner: " + teamThatWon + System.lineSeparator());
 		sb.append("botGame: " + botGame + System.lineSeparator());
-		sb.append("map: " + map + System.lineSeparator());
+		sb.append("mapId: " + mapId + System.lineSeparator());
 		return sb.toString();
 	}
 
