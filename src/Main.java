@@ -69,15 +69,10 @@ public class Main {
 			
 			JLabel guiLabel = gui.getPercentLabel();
 			for (int i = 0; i < logFiles.length; i++) {
-				//file = new File("C:\\Program Files (x86)\\Riot Games\\League of Legends\\Logs\\Game - R3d Logs\\2013-12-13T13-28-09_r3dlog.txt");
-
 				Game game = new Game(logFiles[i]);
 				games[i] = game;
 				float precent = (i + 1f) / logFiles.length * 100f;
 				guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
-				//System.out.println(game);
-				//System.out.println(file);
-				//break;
 			}
 
 			HashMap<String, PlayerSummary> playerSummaries = new HashMap<String, PlayerSummary>();
@@ -93,9 +88,8 @@ public class Main {
 			}
 
 			PlayerSummary[] playerSummaryArray = playerSummaries.values().toArray(new PlayerSummary[0]);
-			
+
 			Arrays.sort(playerSummaryArray, PlayerSummary.GAMES_PLAYED_COMPARATOR);
-			
 
 			PlayerStatsGui playerStatsGui = new PlayerStatsGui();
 			playerStatsGui.setPlayerSummaries(playerSummaryArray);
