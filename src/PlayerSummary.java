@@ -23,11 +23,7 @@ public class PlayerSummary {
 			return 0;
 		}
 	};
-
-	public PlayerSummary(String name) {
-		this.name = name;
-	}
-
+	
 	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary, long lastSeen) {
 		this.name = player.getName();
 		championSummaries.put(firstFoundChampionSummary.getChampionName(),firstFoundChampionSummary);

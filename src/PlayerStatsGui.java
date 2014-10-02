@@ -76,16 +76,6 @@ public class PlayerStatsGui extends JFrame {
 		add(twf, c2);
 
 	}
-	
-	public ChampionSummary getChampionSummaryWithChampionName(ArrayList<ChampionSummary> championSummaries,
-			String name) {
-		for (ChampionSummary championSummary : championSummaries) {
-			if (championSummary.getChampionName().equals(name)) {
-				return championSummary;
-			}
-		}
-		return null;
-	}
 
 	public void setPlayerSummaries(PlayerSummary[] playerSummaries) {
 		this.playerSummaries = playerSummaries;
