@@ -68,6 +68,7 @@ public class Game {
 					mapId = Integer.parseInt(mapMatcher.group(1));
 				} else if (localPlayer != null && line.contains("exit_code")) {
 					updateTeamsWinLoss(line);
+					break;
 				}
 
 			}
