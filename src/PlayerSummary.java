@@ -5,8 +5,6 @@ public class PlayerSummary {
 	
 	private String name;
 	private HashMap<String, ChampionSummary> championSummaries = new HashMap<String, ChampionSummary>();
-	private int blueTeamGames = 0;
-	private int redTeamGames = 0;
 	private int blueTeamWins = 0;
 	private int blueTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
 	private int redTeamWins = 0;
