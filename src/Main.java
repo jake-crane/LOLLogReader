@@ -120,7 +120,6 @@ public class Main {
 			playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
 			playerSummaries.put(playerSummary.getName(), playerSummary);
 		} else { //user found get list of champions and add new champion info
-			playerSummary.updateTeamInfo(player);
 			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
 			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
 			if (championSummary == null) { //champion does not exist for this user
