@@ -75,24 +75,7 @@ public class Main {
 				guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
 			}
 
-			HashMap<String, PlayerSummary> playerSummaries = new HashMap<String, PlayerSummary>();
-			for (Game game : games) {
-				if (!game.isBotGame()) {
-					for (Player player : game.getBlueTeam()) {
-						summarizePlayer(game, player, playerSummaries);
-					}
-					for (Player player : game.getRedTeam()) {
-						summarizePlayer(game, player, playerSummaries);
-					}
-				}
-			}
-
-			PlayerSummary[] playerSummaryArray = playerSummaries.values().toArray(new PlayerSummary[0]);
-
-			Arrays.sort(playerSummaryArray, PlayerSummary.GAMES_PLAYED_COMPARATOR);
-
-			PlayerStatsGui playerStatsGui = new PlayerStatsGui();
-			playerStatsGui.setPlayerSummaries(playerSummaryArray);
+			PlayerStatsGui playerStatsGui = new PlayerStatsGui(games);
 			playerStatsGui.pack();
 			playerStatsGui.setLocationRelativeTo(null);
 
@@ -111,27 +94,6 @@ public class Main {
 			JOptionPane.showMessageDialog(null, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
-	}
-
-	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
-		PlayerSummary playerSummary = playerSummaries.get(player.getName());
-		if (playerSummary == null) { //user does not exist create new and add to list with champ
-			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-			playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
-			playerSummaries.put(playerSummary.getName(), playerSummary);
-		} else { //user found get list of champions and add new champion info
-			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
-			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
-			if (championSummary == null) { //champion does not exist for this user
-				championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-				championsummaries.put(championSummary.getChampionName(), championSummary);
-			} else { //user has used this champion before
-				championSummary.updateTeamInfo(player);
-				championSummary.incrementMinutesPlayedBy(game.getGameLength());
-				championSummary.updateFirstLastSeen(game.getEndTime());
-				championSummary.addGame(game);
-			}
-		}
 	}
 
 }

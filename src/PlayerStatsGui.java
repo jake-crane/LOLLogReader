@@ -1,12 +1,21 @@
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -24,12 +33,64 @@ public class PlayerStatsGui extends JFrame {
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
 	private PlayerSummary[] playerSummaries;
 
-	public PlayerStatsGui() {
+	JRadioButton anyvAnyRadio = new JRadioButton("Any v Any");
+	JRadioButton sixvSixRadio = new JRadioButton("6v6");
+	JRadioButton fivevFiveRadio = new JRadioButton("5v5", true);
+	JRadioButton fourvFourRadio = new JRadioButton("4v4");
+	JRadioButton threevThreeRadio = new JRadioButton("3v3");
+	JRadioButton twovTwoRadio = new JRadioButton("2v2");
+	JRadioButton onevOneRadio = new JRadioButton("1v1");
+
+	JCheckBox showBotGamesCheckBox = new JCheckBox("Show Only Bot Games");
+
+	Game[] games = null;
+
+	TeamSizeFilter filter = null;
+
+	public PlayerStatsGui(Game[] games) {
+
+		this.games = games;
 
 		setLayout(new GridBagLayout());
 
 		setTitle("LOL Log Reader");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+		JRadioButton[] radioButtons = {anyvAnyRadio, sixvSixRadio, fivevFiveRadio, fourvFourRadio,
+				threevThreeRadio, twovTwoRadio, onevOneRadio};
+
+		ButtonGroup group = new ButtonGroup();
+		JPanel optionPanel = new JPanel();
+		for (final JRadioButton r : radioButtons) {
+			group.add(r);
+			optionPanel.add(r);
+			r.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						updatePlayerSummaries();
+						updateChampionTable();
+					}
+				}
+			});
+		}
+
+		optionPanel.add(showBotGamesCheckBox);
+		showBotGamesCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePlayerSummaries();
+				updateChampionTable();
+			}
+		});
+
+		GridBagConstraints c3 = new GridBagConstraints();
+		c3.fill = GridBagConstraints.HORIZONTAL;
+		c3.gridx = 0;
+		c3.gridy = 0;
+		c3.gridheight = 1;
+		c3.gridwidth = 2;
+		add(optionPanel, c3);
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -37,7 +98,7 @@ public class PlayerStatsGui extends JFrame {
 				updateChampionTable();
 			}
 		});
-		
+
 		twf.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			long lastSelected = System.currentTimeMillis();
 			@Override
@@ -56,9 +117,9 @@ public class PlayerStatsGui extends JFrame {
 		listScrollPane = new JScrollPane(jList);
 
 		GridBagConstraints c1 = new GridBagConstraints();
-		c1.fill = GridBagConstraints.BOTH;
+		c1.fill = GridBagConstraints.VERTICAL;
 		c1.gridx = 0;
-		c1.gridy = 0;
+		c1.gridy = 1;
 		c1.gridheight = 2;
 		c1.weightx = .3;
 		c1.weighty = 1;
@@ -69,24 +130,125 @@ public class PlayerStatsGui extends JFrame {
 		GridBagConstraints c2 = new GridBagConstraints();
 		c2.fill = GridBagConstraints.BOTH;
 		c2.gridx = 1;
-		c2.gridy = 0;
+		c2.gridy = 1;
 		c2.weightx = .7;
 		c2.weighty = 1;
 		c2.gridheight = 1;
 		add(twf, c2);
 
+		updatePlayerSummaries();
 	}
 
-	public void setPlayerSummaries(PlayerSummary[] playerSummaries) {
-		this.playerSummaries = playerSummaries;
+	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
+		PlayerSummary playerSummary = playerSummaries.get(player.getName());
+		if (playerSummary == null) { //user does not exist create new and add to list with champ
+			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
+			playerSummary = new PlayerSummary(player, championSummary, game.getEndTime());
+			playerSummaries.put(playerSummary.getName(), playerSummary);
+		} else { //user found get list of champions and add new champion info
+			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
+			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
+			if (championSummary == null) { //champion does not exist for this user
+				championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
+				championsummaries.put(championSummary.getChampionName(), championSummary);
+			} else { //user has used this champion before
+				championSummary.updateTeamInfo(player);
+				championSummary.incrementMinutesPlayedBy(game.getGameLength());
+				championSummary.updateFirstLastSeen(game.getEndTime());
+				championSummary.addGame(game);
+			}
+		}
+	}
+
+	public void updatePlayerSummaries() {
+		if (anyvAnyRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return true;
+				}
+			};
+		} else if (sixvSixRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 6 && game.getRedTeam().size() == 6;
+				}
+			};
+		} else if (fivevFiveRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 5 && game.getRedTeam().size() == 5;
+				}
+			};
+		} else if (fourvFourRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 4 && game.getRedTeam().size() == 4;
+				}
+			};
+		} else if (threevThreeRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 3 && game.getRedTeam().size() == 3;
+				}
+			};
+		} else if (twovTwoRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 2 && game.getRedTeam().size() == 2;
+				}
+			};
+		} else if (onevOneRadio.isSelected()) {
+			filter = new TeamSizeFilter() {
+				@Override
+				public boolean accept(Game game) {
+					return game.getBlueTeam().size() == 1 && game.getRedTeam().size() == 1;
+				}
+			};
+		}
+
+		HashMap<String, PlayerSummary> playerSummaryHashMap = new HashMap<String, PlayerSummary>();
+		for (Game game : games) {
+			if (game.isBotGame() == showBotGamesCheckBox.isSelected() && filter.accept(game)) {
+				for (Player player : game.getBlueTeam()) {
+					summarizePlayer(game, player, playerSummaryHashMap);
+				}
+				for (Player player : game.getRedTeam()) {
+					summarizePlayer(game, player, playerSummaryHashMap);
+				}
+			}
+		}
+
+		playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
+
+		Arrays.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+
+		if (playerSummaries.length == 0) {
+			//DefaultTableModel model = new DefaultTableModel(new String[][]{{}}, new String[][]{{}});
+			//twf.setModel(model, model);
+			twf.getTable().setVisible(false);
+			twf.getFooterTable().setVisible(false);
+			jList.setListData(new PlayerSummary[0]);
+			return;
+		}
+
+		twf.getTable().setVisible(true);
+		twf.getFooterTable().setVisible(true);
 		jList.setListData(playerSummaries);
 		jList.setSelectedIndex(0);
-		setLocationRelativeTo(null);
+
 	}
 
 	public void updateChampionTable() {
 
-		ChampionSummary[] championSummaries = playerSummaries[jList.getSelectedIndex()].getChampionSummaries().values().toArray(new ChampionSummary[0]);
+		if (jList.getSelectedValue() == null) return;
+
+		ChampionSummary[] championSummaries = jList.getSelectedValue().getChampionSummaries().values().toArray(new ChampionSummary[0]);
 
 		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen",
 				"Blue Wins", "Red Wins"};
@@ -221,6 +383,10 @@ public class PlayerStatsGui extends JFrame {
 		pack();
 		twf.adjustColumns();
 		pack();
+	}
+
+	private static interface TeamSizeFilter {
+		abstract boolean accept(Game game);
 	}
 
 }

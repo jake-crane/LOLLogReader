@@ -70,7 +70,6 @@ public class Game {
 					updateTeamsWinLoss(line);
 					break;
 				}
-
 			}
 		}
 		if (getBlueTeam().size() + getRedTeam().size() == 1) {
