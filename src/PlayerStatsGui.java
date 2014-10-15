@@ -7,12 +7,14 @@ import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -43,9 +45,13 @@ public class PlayerStatsGui extends JFrame {
 
 	JCheckBox showBotGamesCheckBox = new JCheckBox("Show Only Bot Games");
 
+	private DatePicker fromDatePicker = new DatePicker();
+	private DatePicker toDatePicker = new DatePicker();
+
 	Game[] games = null;
 
-	TeamSizeFilter filter = null;
+	private GameFilter teamSizeFilter = null;
+	private GameFilter dateFilter = null;
 
 	public PlayerStatsGui(Game[] games) {
 
@@ -83,6 +89,17 @@ public class PlayerStatsGui extends JFrame {
 				updateChampionTable();
 			}
 		});
+
+		optionPanel.add(new JLabel("From:"));
+		fromDatePicker.setDate(1970, 0, 1, 0, 0, 0);
+		optionPanel.add(fromDatePicker);
+		
+		optionPanel.add(new JLabel("To:"));
+		Calendar c = Calendar.getInstance(); 
+		c.add(Calendar.DATE, 1);
+		toDatePicker.setDate(c.getTime());
+		toDatePicker.setTimeofDayToZero();
+		optionPanel.add(toDatePicker);
 
 		GridBagConstraints c3 = new GridBagConstraints();
 		c3.fill = GridBagConstraints.HORIZONTAL;
@@ -137,6 +154,21 @@ public class PlayerStatsGui extends JFrame {
 		add(twf, c2);
 
 		updatePlayerSummaries();
+
+		toDatePicker.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePlayerSummaries();
+				updateChampionTable();
+			}
+		});
+		fromDatePicker.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePlayerSummaries();
+				updateChampionTable();
+			}
+		});
 	}
 
 	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
@@ -162,49 +194,49 @@ public class PlayerStatsGui extends JFrame {
 
 	public void updatePlayerSummaries() {
 		if (anyvAnyRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return true;
 				}
 			};
 		} else if (sixvSixRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 6 && game.getRedTeam().size() == 6;
 				}
 			};
 		} else if (fivevFiveRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 5 && game.getRedTeam().size() == 5;
 				}
 			};
 		} else if (fourvFourRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 4 && game.getRedTeam().size() == 4;
 				}
 			};
 		} else if (threevThreeRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 3 && game.getRedTeam().size() == 3;
 				}
 			};
 		} else if (twovTwoRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 2 && game.getRedTeam().size() == 2;
 				}
 			};
 		} else if (onevOneRadio.isSelected()) {
-			filter = new TeamSizeFilter() {
+			teamSizeFilter = new GameFilter() {
 				@Override
 				public boolean accept(Game game) {
 					return game.getBlueTeam().size() == 1 && game.getRedTeam().size() == 1;
@@ -212,9 +244,20 @@ public class PlayerStatsGui extends JFrame {
 			};
 		}
 
+		dateFilter = new GameFilter() {
+			@Override
+			public boolean accept(Game game) {
+				return game.getStartTime() >= fromDatePicker.getDate().getTime()
+						&& game.getStartTime() < toDatePicker.getDate().getTime();
+			}
+		};
+
 		HashMap<String, PlayerSummary> playerSummaryHashMap = new HashMap<String, PlayerSummary>();
 		for (Game game : games) {
-			if (game.isBotGame() == showBotGamesCheckBox.isSelected() && filter.accept(game)) {
+			if (game.isBotGame() == showBotGamesCheckBox.isSelected()
+					&& teamSizeFilter.accept(game)
+					&& dateFilter.accept(game)
+					) {
 				for (Player player : game.getBlueTeam()) {
 					summarizePlayer(game, player, playerSummaryHashMap);
 				}
@@ -379,13 +422,17 @@ public class PlayerStatsGui extends JFrame {
 		twf.getTable().getRowSorter().toggleSortOrder(2);
 		twf.getTable().getRowSorter().toggleSortOrder(2);
 
+		Date firstGameDate = (Date)twf.getFooterTable().getValueAt(0, 4);
+		fromDatePicker.setDate(firstGameDate);
+		fromDatePicker.setTimeofDayToZero();
+
 		twf.adjustColumns();
 		pack();
 		twf.adjustColumns();
 		pack();
 	}
 
-	private static interface TeamSizeFilter {
+	private static interface GameFilter {
 		abstract boolean accept(Game game);
 	}
 

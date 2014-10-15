@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -66,7 +64,7 @@ public class Main {
 			File[] logFiles = usersLogDir.listFiles();
 
 			Game[] games = new Game[logFiles.length];
-			
+
 			JLabel guiLabel = gui.getPercentLabel();
 			for (int i = 0; i < logFiles.length; i++) {
 				Game game = new Game(logFiles[i]);
