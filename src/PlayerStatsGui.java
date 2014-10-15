@@ -35,20 +35,20 @@ public class PlayerStatsGui extends JFrame {
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
 	private PlayerSummary[] playerSummaries;
 
-	JRadioButton anyvAnyRadio = new JRadioButton("Any v Any");
-	JRadioButton sixvSixRadio = new JRadioButton("6v6");
-	JRadioButton fivevFiveRadio = new JRadioButton("5v5", true);
-	JRadioButton fourvFourRadio = new JRadioButton("4v4");
-	JRadioButton threevThreeRadio = new JRadioButton("3v3");
-	JRadioButton twovTwoRadio = new JRadioButton("2v2");
-	JRadioButton onevOneRadio = new JRadioButton("1v1");
+	private JRadioButton anyvAnyRadio = new JRadioButton("Any v Any");
+	private JRadioButton sixvSixRadio = new JRadioButton("6v6");
+	private JRadioButton fivevFiveRadio = new JRadioButton("5v5", true);
+	private JRadioButton fourvFourRadio = new JRadioButton("4v4");
+	private JRadioButton threevThreeRadio = new JRadioButton("3v3");
+	private JRadioButton twovTwoRadio = new JRadioButton("2v2");
+	private JRadioButton onevOneRadio = new JRadioButton("1v1");
 
-	JCheckBox showBotGamesCheckBox = new JCheckBox("Show Only Bot Games");
+	private JCheckBox showBotGamesCheckBox = new JCheckBox("View Bot Games");
 
 	private DatePicker fromDatePicker = new DatePicker();
 	private DatePicker toDatePicker = new DatePicker();
 
-	Game[] games = null;
+	private Game[] games = null;
 
 	private GameFilter teamSizeFilter = null;
 	private GameFilter dateFilter = null;
