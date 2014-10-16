@@ -29,7 +29,7 @@ public class AllyOrEnemyGui extends JFrame {
 	public AllyOrEnemyGui(boolean ally, String playerName, ChampionSummary myChampionSummary) {
 		setLayout(new GridBagLayout());
 
-		setTitle((ally ? "Ally": "Enamy")
+		setTitle((ally ? "Ally": "Enemy")
 				+ " stats when " 
 				+ playerName 
 				+ " played " + myChampionSummary.getChampionName());
