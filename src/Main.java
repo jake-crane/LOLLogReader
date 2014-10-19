@@ -65,11 +65,11 @@ public class Main {
 			Game[] games = new Game[logFiles.length];
 
 			JProgressBar progressBar = gui.getProgressBar();
+			progressBar.setMaximum(logFiles.length);
 			for (int i = 0; i < logFiles.length; i++) {
 				Game game = new Game(logFiles[i]);
 				games[i] = game;
-				float precent = (i + 1f) / logFiles.length * 100f;
-				progressBar.setValue((int)precent);
+				progressBar.setValue(i + 1);
 			}
 
 			System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
