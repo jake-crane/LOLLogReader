@@ -3,8 +3,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 
 public class Main {
@@ -60,18 +60,19 @@ public class Main {
 
 			long startTime = System.currentTimeMillis();
 
-
 			File[] logFiles = usersLogDir.listFiles();
 
 			Game[] games = new Game[logFiles.length];
 
-			JLabel guiLabel = gui.getPercentLabel();
+			JProgressBar progressBar = gui.getProgressBar();
 			for (int i = 0; i < logFiles.length; i++) {
 				Game game = new Game(logFiles[i]);
 				games[i] = game;
 				float precent = (i + 1f) / logFiles.length * 100f;
-				guiLabel.setText((i + 1) + "/ " + logFiles.length + " (" + (int)precent + "%)");
+				progressBar.setValue((int)precent);
 			}
+
+			System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
 
 			PlayerStatsGui playerStatsGui = new PlayerStatsGui(games);
 			playerStatsGui.pack();
@@ -83,7 +84,7 @@ public class Main {
 
 			gui.dispose();
 
-			System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
+			System.out.println("finished reading log files and displayed gui in " + (System.currentTimeMillis() - startTime));
 
 		} catch (Exception e) {
 			e.printStackTrace();

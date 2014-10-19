@@ -1,27 +1,30 @@
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
 
-	private JLabel readingFilesLabel = new JLabel("Reading Log Files...");
-	private JLabel percentLabel = new JLabel("0%");
+	private JLabel readingFilesLabel = new JLabel("Reading Log Files...", JLabel.CENTER);
+	private JProgressBar progressBar = new JProgressBar();
 
 	public Gui() {
-		setLayout(new GridBagLayout());
+		setLayout(new GridLayout(2, 1));
 
 		setTitle("LOL Log Reader");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		add(readingFilesLabel);
-		add(getPercentLabel());
+
+		progressBar.setStringPainted(true);
+		add(progressBar);
 	}
 
-	public JLabel getPercentLabel() {
-		return percentLabel;
+	public JProgressBar getProgressBar() {
+		return progressBar;
 	}
 
 }
