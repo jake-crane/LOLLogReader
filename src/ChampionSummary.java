@@ -82,7 +82,7 @@ public class ChampionSummary {
 			}
 		}
 	}
-	
+
 	public void updateTeamInfo(int team, GameResult gameResult) {
 		if (team == Game.BLUE_TEAM) {
 			incrementBlueTeamGamesPlayed();

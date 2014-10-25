@@ -74,8 +74,7 @@ public class PlayerStatsGui extends JFrame {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						updatePlayerSummaries();
-						updateChampionTable();
+						updatePlayerSummaries(); //updateChampionTable will be called when playersummary index gets set
 					}
 				}
 			});
@@ -85,8 +84,7 @@ public class PlayerStatsGui extends JFrame {
 		showBotGamesCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries();
-				updateChampionTable();
+				updatePlayerSummaries(); //updateChampionTable will be called when playersummary index gets set
 			}
 		});
 
@@ -158,15 +156,13 @@ public class PlayerStatsGui extends JFrame {
 		toDatePicker.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries();
-				updateChampionTable();
+				updatePlayerSummaries(); //updateChampionTable will be called when playersummary index gets set
 			}
 		});
 		fromDatePicker.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries();
-				updateChampionTable();
+				updatePlayerSummaries(); //updateChampionTable will be called when playersummary index gets set
 			}
 		});
 	}
@@ -192,6 +188,9 @@ public class PlayerStatsGui extends JFrame {
 		}
 	}
 
+	/**
+	 * updateChampionTable will also be called when jList index gets set
+	 */
 	public void updatePlayerSummaries() {
 		if (anyvAnyRadio.isSelected()) {
 			teamSizeFilter = new GameFilter() {
