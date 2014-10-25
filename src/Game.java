@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class Game {
 
-	public static final int SUMMONERS_RIFT_ID = 1;
+	//public static final int SUMMONERS_RIFT_ID = 1;
 
 	public static final int BLUE_TEAM = 100, RED_TEAM = 200;
 
