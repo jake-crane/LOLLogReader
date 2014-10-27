@@ -3,19 +3,23 @@ import java.util.ArrayList;
 public class ChampionSummary {
 
 	private String championName;
-	private int blueTeamGames = 0;
-	private int redTeamGames = 0;
+	private int blueTeamGames = 0; //kept track of so undetermined outcomes can be calculated
+	private int redTeamGames = 0; //kept track of so undetermined outcomes can be calculated
 	private int blueTeamWins = 0;
-	private int blueTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
+	private int blueTeamLosses = 0;
 	private int redTeamWins = 0;
-	private int redTeamLosses = 0; //kept track of so undetermined outcomes can be calculated
+	private int redTeamLosses = 0;
 	private long minutesPlayed;
 	private int lastTeamId;
-	private long firstSeen = Long.MAX_VALUE;
-	private long lastSeen = 0;
+	private long firstSeen = Long.MAX_VALUE; //set to max for comparisons in updateFirstLastSeen method
+	private long lastSeen = 0; //set to 0 for comparisons in updateFirstLastSeen method
 	
 	private ArrayList<Game> games = new ArrayList<Game>();
 
+	/**
+	 * Only used to create a Total ChampionSummary
+	 * @param championName
+	 */
 	public ChampionSummary(String championName) {
 		this.championName = championName;
 	}
