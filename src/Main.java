@@ -67,12 +67,15 @@ public class Main {
 			JProgressBar progressBar = gui.getProgressBar();
 			progressBar.setMaximum(logFiles.length);
 			for (int i = 0; i < logFiles.length; i++) {
-				Game game = new Game(logFiles[i]);
-				games[i] = game;
+				games[i] = new Game(logFiles[i]);
 				progressBar.setValue(i + 1);
 			}
 
-			System.out.println("finished reading log files in " + (System.currentTimeMillis() - startTime));
+			double readTimeInSeconds = (System.currentTimeMillis() - startTime) / 1000d;
+			System.out.println("finished reading " + logFiles.length + " log files in "
+					+ readTimeInSeconds + "s (" + (logFiles.length / readTimeInSeconds) + " files/s)");
+
+			long guiStartTime = System.currentTimeMillis();
 
 			PlayerStatsGui playerStatsGui = new PlayerStatsGui(games);
 			playerStatsGui.pack();
@@ -84,7 +87,9 @@ public class Main {
 
 			gui.dispose();
 
-			System.out.println("finished reading log files and displayed gui in " + (System.currentTimeMillis() - startTime));
+			double guiDsiplayTimeInSeconds = (System.currentTimeMillis() - guiStartTime) / 1000d;
+
+			System.out.println("displayed gui in " + guiDsiplayTimeInSeconds + "s");
 
 		} catch (Exception e) {
 			e.printStackTrace();
