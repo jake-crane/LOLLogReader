@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -16,9 +18,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -91,7 +97,7 @@ public class PlayerStatsGui extends JFrame {
 		optionPanel.add(new JLabel("From:"));
 		fromDatePicker.setDate(1970, 0, 1, 0, 0, 0);
 		optionPanel.add(fromDatePicker);
-		
+
 		optionPanel.add(new JLabel("To:"));
 		Calendar c = Calendar.getInstance(); 
 		c.add(Calendar.DATE, 1);
@@ -111,21 +117,6 @@ public class PlayerStatsGui extends JFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				updateChampionTable();
-			}
-		});
-
-		twf.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			long lastSelected = System.currentTimeMillis();
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				//limit this event to once every 1500 milliseconds
-				if (System.currentTimeMillis() - lastSelected < 1500) return;
-				lastSelected = System.currentTimeMillis();
-				ChampionSummary championSummary = jList.getSelectedValue().getChampionSummaries().get(
-						twf.getTable().getValueAt(twf.getTable().getSelectedRow(), 0)
-						);
-				new AllyOrEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
-				new AllyOrEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
 			}
 		});
 
@@ -163,6 +154,26 @@ public class PlayerStatsGui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				updatePlayerSummaries(); //updateChampionTable will be called when playersummary index gets set
+			}
+		});
+
+		twf.getTable().addMouseListener(new MouseAdapter() { //add right click select and menu
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int r = twf.getTable().rowAtPoint(e.getPoint());
+				if (r >= 0 && r < twf.getTable().getRowCount()) {
+					twf.getTable().setRowSelectionInterval(r, r);
+				} else {
+					twf.getTable().clearSelection();
+				}
+
+				int rowindex = twf.getTable().getSelectedRow();
+				if (rowindex < 0)
+					return;
+				if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+					JPopupMenu popup = new MyMenu(jList, twf.getTable());
+					popup.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 		});
 	}
@@ -435,4 +446,51 @@ public class PlayerStatsGui extends JFrame {
 		abstract boolean accept(Game game);
 	}
 
+	private static class MyMenu extends JPopupMenu {
+
+		//TODO try to combine actionlisteners before commit
+		public MyMenu(final JList<PlayerSummary> jList, final JTable table) {
+
+			JMenuItem AllyStatsItem = new JMenuItem("Ally Stats");
+			AllyStatsItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (table.getSelectedRow() == -1) {
+						JOptionPane.showMessageDialog(null,
+								"No Champion Selected",
+								"Error",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					ChampionSummary championSummary = jList.getSelectedValue().getChampionSummaries().get(
+							table.getValueAt(table.getSelectedRow(), 0)
+							);
+					new AllyOrEnemyGui(true, jList.getSelectedValue().getName(), championSummary).pack();
+				}
+			});
+			add(AllyStatsItem);
+
+			JMenuItem enemyStatsItem = new JMenuItem("Enamy Stats");
+			enemyStatsItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (table.getSelectedRow() == -1) {
+						JOptionPane.showMessageDialog(null,
+								"No Champion Selected",
+								"Error",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					ChampionSummary championSummary = jList.getSelectedValue().getChampionSummaries().get(
+							table.getValueAt(table.getSelectedRow(), 0)
+							);
+					new AllyOrEnemyGui(false, jList.getSelectedValue().getName(), championSummary).pack();
+				}
+			});
+			add(enemyStatsItem);
+
+			add(new JMenuItem("cancel"));
+
+		}
+	}
 }
