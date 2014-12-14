@@ -207,5 +207,5 @@ public class TableWithFooter extends JPanel {
 		}
 		return new Float(total);
 	}
-	
+
 }

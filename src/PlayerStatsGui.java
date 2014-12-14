@@ -102,7 +102,7 @@ public class PlayerStatsGui extends JFrame {
 		optionPanel.add(fromDatePicker);
 
 		optionPanel.add(new JLabel("To:"));
-		Calendar c = Calendar.getInstance(); 
+		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DATE, 1);
 		toDatePicker.setDate(c.getTime());
 		toDatePicker.setTimeofDayToZero();
@@ -369,7 +369,7 @@ public class PlayerStatsGui extends JFrame {
 			data[i][5] = new Date(championSummaries[i].getLastSeen());
 			if (championSummaries[i].blueTeamGamesWithKnownOutcome() > 0) {
 				data[i][6] = championSummaries[i].getBlueTeamWins()
-						+ "/" 
+						+ "/"
 						+ championSummaries[i].blueTeamGamesWithKnownOutcome()
 						+ "  ("
 						+ DF.format(100d * ((double)championSummaries[i].getBlueTeamWins() / (double)championSummaries[i].blueTeamGamesWithKnownOutcome()))
@@ -377,7 +377,7 @@ public class PlayerStatsGui extends JFrame {
 			}
 			if (championSummaries[i].redTeamGamesWithKnownOutcome() > 0) {
 				data[i][7] = championSummaries[i].getRedTeamWins()
-						+ "/" 
+						+ "/"
 						+ championSummaries[i].redTeamGamesWithKnownOutcome()
 						+ "  ("
 						+ DF.format(100d * ((double)championSummaries[i].getRedTeamWins() / (double)championSummaries[i].redTeamGamesWithKnownOutcome()))
@@ -415,7 +415,7 @@ public class PlayerStatsGui extends JFrame {
 		footerData[0][5] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
 			footerData[0][6] = total.getBlueTeamWins()
-					+ "/" 
+					+ "/"
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
 					+ DF.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
@@ -423,7 +423,7 @@ public class PlayerStatsGui extends JFrame {
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
 			footerData[0][7] = total.getRedTeamWins()
-					+ "/" 
+					+ "/"
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
 					+ DF.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))

@@ -13,7 +13,7 @@ public class ChampionSummary {
 	private int lastTeamId;
 	private long firstSeen = Long.MAX_VALUE; //set to max for comparisons in updateFirstLastSeen method
 	private long lastSeen = 0; //set to 0 for comparisons in updateFirstLastSeen method
-	
+
 	private ArrayList<Game> games = new ArrayList<Game>();
 
 	/**
@@ -44,11 +44,11 @@ public class ChampionSummary {
 	public void incrementBlueTeamWinsBy(int wins) {
 		this.blueTeamWins += wins;
 	}
-	
+
 	public void incrementRedTeamWins() {
 		redTeamWins++;
 	}
-	
+
 	public void incrementRedTeamWinsBy(int wins) {
 		this.redTeamWins += wins;
 	}
@@ -60,7 +60,7 @@ public class ChampionSummary {
 	public void incrementBlueTeamLossesBy(int losses) {
 		this.blueTeamLosses += losses;
 	}
-	
+
 	public void incrementRedTeamLosses() {
 		redTeamLosses++;
 	}
@@ -68,7 +68,7 @@ public class ChampionSummary {
 	public void incrementRedTeamLossesBy(int losses) {
 		this.redTeamLosses += losses;
 	}
-	
+
 	public void updateTeamInfo(Player player) {
 		if (player.getTeam() == Game.BLUE_TEAM) {
 			incrementBlueTeamGamesPlayed();
@@ -112,7 +112,7 @@ public class ChampionSummary {
 	public void incrementBlueTeamGamesPlayed() {
 		blueTeamGames++;
 	}
-	
+
 	public void incrementRedTeamGamesPlayed() {
 		blueTeamGames++;
 	}
@@ -120,31 +120,31 @@ public class ChampionSummary {
 	public void incrementBlueGamesPlayedBy(int gamesPlayed) {
 		this.blueTeamGames += gamesPlayed;
 	}
-	
+
 	public void incrementRedGamesPlayedBy(int gamesPlayed) {
 		this.redTeamGames += gamesPlayed;
 	}
-	
+
 	public int getBlueTeamGames() {
 		return blueTeamGames;
 	}
-	
+
 	public int getBlueTeamWins() {
 		return blueTeamWins;
 	}
-	
+
 	public int getBlueTeamLosses() {
 		return blueTeamLosses;
 	}
-	
+
 	public int getRedTeamGames() {
 		return redTeamGames;
 	}
-	
+
 	public int getRedTeamWins() {
 		return redTeamWins;
 	}
-	
+
 	public int getRedTeamLosses() {
 		return redTeamLosses;
 	}
@@ -160,7 +160,7 @@ public class ChampionSummary {
 	public int getLastTeamId() {
 		return lastTeamId;
 	}
-	
+
 	/**
 	 * Sets lastSeen if the timeSeen is more recent or firstSeen if timeSeen is less recent.
 	 * @param timeSeen
@@ -201,7 +201,7 @@ public class ChampionSummary {
 	public boolean addGame(Game game) {
 		return games.add(game);
 	}
-	
+
 	public ArrayList<Game> getGames() {
 		return games;
 	}

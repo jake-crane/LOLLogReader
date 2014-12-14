@@ -30,8 +30,8 @@ public class AllyOrEnemyGui extends JFrame {
 		setLayout(new GridBagLayout());
 
 		setTitle((ally ? "Ally": "Enemy")
-				+ " stats when " 
-				+ playerName 
+				+ " stats when "
+				+ playerName
 				+ " played " + myChampionSummary.getChampionName());
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -84,7 +84,7 @@ public class AllyOrEnemyGui extends JFrame {
 			data[i][5] = new Date(championSummary.getLastSeen());
 			if (championSummary.blueTeamGamesWithKnownOutcome() > 0) {
 				data[i][6] = championSummary.getBlueTeamWins()
-						+ "/" 
+						+ "/"
 						+ championSummary.blueTeamGamesWithKnownOutcome()
 						+ "  ("
 						+ PlayerStatsGui.DF.format(100d * ((double)championSummary.getBlueTeamWins() / (double)championSummary.blueTeamGamesWithKnownOutcome()))
@@ -92,7 +92,7 @@ public class AllyOrEnemyGui extends JFrame {
 			}
 			if (championSummary.redTeamGamesWithKnownOutcome() > 0) {
 				data[i][7] = championSummary.getRedTeamWins()
-						+ "/" 
+						+ "/"
 						+ championSummary.redTeamGamesWithKnownOutcome()
 						+ "  ("
 						+ PlayerStatsGui.DF.format(100d * ((double)championSummary.getRedTeamWins() / (double)championSummary.redTeamGamesWithKnownOutcome()))
@@ -130,7 +130,7 @@ public class AllyOrEnemyGui extends JFrame {
 		footerData[0][5] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
 			footerData[0][6] = total.getBlueTeamWins()
-					+ "/" 
+					+ "/"
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
 					+ PlayerStatsGui.DF.format(100d * ((double)total.getBlueTeamWins() / (double)total.blueTeamGamesWithKnownOutcome()))
@@ -138,7 +138,7 @@ public class AllyOrEnemyGui extends JFrame {
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
 			footerData[0][7] = total.getRedTeamWins()
-					+ "/" 
+					+ "/"
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
 					+ PlayerStatsGui.DF.format(100d * ((double)total.getRedTeamWins() / (double)total.redTeamGamesWithKnownOutcome()))

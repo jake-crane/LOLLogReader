@@ -23,7 +23,7 @@ public class Main {
 		}
 
 		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fc.showOpenDialog(null);
 
 		return fc.getSelectedFile();
@@ -41,7 +41,7 @@ public class Main {
 
 			File usersLogDir = getUsersLogDirectory();
 
-			if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName()) 
+			if (usersLogDir == null || (!usersLogDir.getName().equals(WINDOWS_DEFAULT_LOG_DIR.getName())
 					&& !usersLogDir.getName().equals(MAC_LOG_DIR.getName()))) {
 				System.out.println("You selected '" + usersLogDir.getName() + "'");
 				System.out.println("You must select '" + WINDOWS_DEFAULT_LOG_DIR.getName() + "' or "
