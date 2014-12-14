@@ -1,4 +1,3 @@
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.SimpleDateFormat;
@@ -7,9 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -222,24 +218,4 @@ public class AllyOrEnemyGui extends JFrame {
 		return map;
 	}
 
-	//TODO use or remove
-	class ChampionCellRenderer extends JLabel implements ListCellRenderer {
-
-		public ChampionCellRenderer() {
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			setText(((ChampionSummary)value).getChampionName());
-			if (isSelected) {
-				setBackground(list.getSelectionBackground());
-				setForeground(list.getSelectionForeground());
-			} else {
-				setBackground(list.getBackground());
-				setForeground(list.getForeground());
-			}
-			return this;
-		}
-	}
 }
