@@ -18,9 +18,9 @@ public class PlayerSummary {
 		}
 	};
 
-	public PlayerSummary(Player player, ChampionSummary firstFoundChampionSummary, long lastSeen) {
-		this.name = player.getName();
-		championSummaries.put(firstFoundChampionSummary.getChampionName(),firstFoundChampionSummary);
+	public PlayerSummary(String playerName, ChampionSummary firstFoundChampionSummary) {
+		this.name = playerName;
+		championSummaries.put(firstFoundChampionSummary.getChampionName(), firstFoundChampionSummary);
 	}
 
 	public String getName() {
