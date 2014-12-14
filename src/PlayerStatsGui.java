@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -58,6 +59,8 @@ public class PlayerStatsGui extends JFrame {
 
 	private GameFilter teamSizeFilter = null;
 	private GameFilter dateFilter = null;
+
+	private String lastSelectedPlayerName;
 
 	public PlayerStatsGui(Game[] games) {
 
@@ -120,6 +123,28 @@ public class PlayerStatsGui extends JFrame {
 			}
 		});
 
+		jList.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+
+			@Override
+			public void mousePressed(MouseEvent e) {}
+
+			@Override
+			public void mouseExited(MouseEvent e) {}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (jList.getSelectedValue() != null) {
+					//Remember selection if user chose a player name
+					lastSelectedPlayerName = jList.getSelectedValue().getName();
+				}
+			}
+		});
+
 		listScrollPane = new JScrollPane(jList);
 
 		GridBagConstraints c1 = new GridBagConstraints();
@@ -176,6 +201,9 @@ public class PlayerStatsGui extends JFrame {
 				}
 			}
 		});
+		Date firstGameDate = (Date)twf.getFooterTable().getValueAt(0, 4);
+		fromDatePicker.setDate(firstGameDate);
+		fromDatePicker.setTimeofDayToZero();
 	}
 
 	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
@@ -292,8 +320,19 @@ public class PlayerStatsGui extends JFrame {
 
 		twf.getTable().setVisible(true);
 		twf.getFooterTable().setVisible(true);
+
 		jList.setListData(playerSummaries);
-		jList.setSelectedIndex(0);
+
+		for (PlayerSummary ps : playerSummaries) {
+			if (ps.getName().equals(lastSelectedPlayerName)) {
+				jList.setSelectedValue(ps, true);
+				break;
+			}
+		}
+
+		if (jList.getSelectedIndex() == -1) {
+			jList.setSelectedIndex(0);
+		}
 
 	}
 
@@ -431,10 +470,6 @@ public class PlayerStatsGui extends JFrame {
 
 		twf.getTable().getRowSorter().toggleSortOrder(2);
 		twf.getTable().getRowSorter().toggleSortOrder(2);
-
-		Date firstGameDate = (Date)twf.getFooterTable().getValueAt(0, 4);
-		fromDatePicker.setDate(firstGameDate);
-		fromDatePicker.setTimeofDayToZero();
 
 		twf.adjustColumns();
 		pack();
