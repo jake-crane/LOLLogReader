@@ -201,7 +201,7 @@ public class PlayerStatsGui extends JFrame {
 				}
 			}
 		});
-		Date firstGameDate = (Date)twf.getFooterTable().getValueAt(0, 4);
+		Date firstGameDate = (Date)twf.getFooterTable().getValueAt(0, 5);
 		fromDatePicker.setDate(firstGameDate);
 		fromDatePicker.setTimeofDayToZero();
 	}
@@ -365,7 +365,7 @@ public class PlayerStatsGui extends JFrame {
 
 		ChampionSummary[] championSummaries = jList.getSelectedValue().getChampionSummaries().values().toArray(new ChampionSummary[0]);
 
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen",
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "Avg Game Time", "First Seen", "Last Seen",
 				"Blue Wins", "Red Wins"};
 		final Object[][] data = new Object[championSummaries.length][columnNames.length];
 
@@ -388,10 +388,11 @@ public class PlayerStatsGui extends JFrame {
 
 			data[i][3] = new Long(championSummaries[i].getMinutesPlayed());
 			total.incrementMinutesPlayedBy(championSummaries[i].getMinutesPlayed());
-			data[i][4] = new Date(championSummaries[i].getFirstSeen());
-			data[i][5] = new Date(championSummaries[i].getLastSeen());
+			data[i][4] = new Double(championSummaries[i].getMinutesPlayed() / (double)championSummaries[i].getGamesPlayed());
+			data[i][5] = new Date(championSummaries[i].getFirstSeen());
+			data[i][6] = new Date(championSummaries[i].getLastSeen());
 			if (championSummaries[i].blueTeamGamesWithKnownOutcome() > 0) {
-				data[i][6] = championSummaries[i].getBlueTeamWins()
+				data[i][7] = championSummaries[i].getBlueTeamWins()
 						+ "/"
 						+ championSummaries[i].blueTeamGamesWithKnownOutcome()
 						+ "  ("
@@ -399,7 +400,7 @@ public class PlayerStatsGui extends JFrame {
 						+ "%)";
 			}
 			if (championSummaries[i].redTeamGamesWithKnownOutcome() > 0) {
-				data[i][7] = championSummaries[i].getRedTeamWins()
+				data[i][8] = championSummaries[i].getRedTeamWins()
 						+ "/"
 						+ championSummaries[i].redTeamGamesWithKnownOutcome()
 						+ "  ("
@@ -434,10 +435,11 @@ public class PlayerStatsGui extends JFrame {
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
 		footerData[0][3] = new Long(total.getMinutesPlayed());
-		footerData[0][4] = new Date(total.getFirstSeen());
-		footerData[0][5] = new Date(total.getLastSeen());
+		footerData[0][4] = new Double(total.getMinutesPlayed() / (double)total.getGamesPlayed());
+		footerData[0][5] = new Date(total.getFirstSeen());
+		footerData[0][6] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
-			footerData[0][6] = total.getBlueTeamWins()
+			footerData[0][7] = total.getBlueTeamWins()
 					+ "/"
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
@@ -445,7 +447,7 @@ public class PlayerStatsGui extends JFrame {
 					+ "%)";
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
-			footerData[0][7] = total.getRedTeamWins()
+			footerData[0][8] = total.getRedTeamWins()
 					+ "/"
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
@@ -486,7 +488,7 @@ public class PlayerStatsGui extends JFrame {
 			}
 		};
 
-		for (int i = 4; i < 6; i++) {
+		for (int i = 5; i < 7; i++) {
 			twf.getTable().getColumnModel().getColumn(i).setCellRenderer(dateCellRenderer);
 			twf.getFooterTable().getColumnModel().getColumn(i).setCellRenderer(dateCellRenderer);
 		}
