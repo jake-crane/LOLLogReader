@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -182,8 +181,13 @@ public class Game {
 		return localPlayer;
 	}
 
+	/**
+	 * Since gameLength is not stored in the Game class,
+	 * this method calculates gameLength by subtracting startTime from endTime
+	 * @return the game length in milliseconds
+	 */
 	public long getGameLength() {
-		return TimeUnit.MILLISECONDS.toMinutes(endTime - startTime);
+		return endTime - startTime;
 	}
 
 	@Override

@@ -74,8 +74,8 @@ public class AllyOrEnemyGui extends JFrame {
 			total.incrementBlueGamesPlayedBy(championSummary.getBlueTeamGames());
 			total.incrementRedGamesPlayedBy(championSummary.getRedTeamGames());
 
-			data[i][3] = new Long(championSummary.getMinutesPlayed());
-			total.incrementMinutesPlayedBy(championSummary.getMinutesPlayed());
+			data[i][3] = new Long(championSummary.getTimePlayed());
+			total.incrementTimePlayedBy(championSummary.getTimePlayed());
 			data[i][4] = new Date(championSummary.getFirstSeen());
 			data[i][5] = new Date(championSummary.getLastSeen());
 			if (championSummary.blueTeamGamesWithKnownOutcome() > 0) {
@@ -121,7 +121,7 @@ public class AllyOrEnemyGui extends JFrame {
 			footerData[0][1] = new Double(100d * (total.totalWins() / knownWinLossGames));
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
-		footerData[0][3] = new Long(total.getMinutesPlayed());
+		footerData[0][3] = new Long(total.getTimePlayed());
 		footerData[0][4] = new Date(total.getFirstSeen());
 		footerData[0][5] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
@@ -209,7 +209,7 @@ public class AllyOrEnemyGui extends JFrame {
 					map.put(newcs.getChampionName(), newcs);
 				} else {
 					cs.updateTeamInfo(player);
-					cs.incrementMinutesPlayedBy(game.getGameLength());
+					cs.incrementTimePlayedBy(game.getGameLength());
 					cs.updateFirstLastSeen(game.getEndTime());
 					cs.addGame(game);
 				}

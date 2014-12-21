@@ -9,7 +9,7 @@ public class ChampionSummary {
 	private int blueTeamLosses = 0;
 	private int redTeamWins = 0;
 	private int redTeamLosses = 0;
-	private long minutesPlayed;
+	private long timePlayed;
 	private int lastTeamId;
 	private long firstSeen = Long.MAX_VALUE; //set to max for comparisons in updateFirstLastSeen method
 	private long lastSeen = 0; //set to 0 for comparisons in updateFirstLastSeen method
@@ -26,7 +26,7 @@ public class ChampionSummary {
 
 	public ChampionSummary(String championName, Game game, int lastTeamId, GameResult gameResult) {
 		this.championName = championName;
-		this.minutesPlayed = game.getGameLength();
+		this.timePlayed = game.getGameLength();
 		this.lastTeamId = lastTeamId;
 		updateTeamInfo(lastTeamId, gameResult);
 		updateFirstLastSeen(game.getEndTime());
@@ -149,12 +149,12 @@ public class ChampionSummary {
 		return redTeamLosses;
 	}
 
-	public long getMinutesPlayed() {
-		return minutesPlayed;
+	public long getTimePlayed() {
+		return timePlayed;
 	}
 
-	public void incrementMinutesPlayedBy(long l) {
-		minutesPlayed += l;
+	public void incrementTimePlayedBy(long l) {
+		timePlayed += l;
 	}
 
 	public int getLastTeamId() {

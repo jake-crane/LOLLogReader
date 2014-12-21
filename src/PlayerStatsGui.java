@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -26,7 +27,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -69,7 +69,7 @@ public class PlayerStatsGui extends JFrame {
 		setLayout(new GridBagLayout());
 
 		setTitle("LOL Log Reader");
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JRadioButton[] radioButtons = {anyvAnyRadio, sixvSixRadio, fivevFiveRadio, fourvFourRadio,
 				threevThreeRadio, twovTwoRadio, onevOneRadio};
@@ -220,7 +220,7 @@ public class PlayerStatsGui extends JFrame {
 				championsummaries.put(championSummary.getChampionName(), championSummary);
 			} else { //user has used this champion before
 				championSummary.updateTeamInfo(player);
-				championSummary.incrementMinutesPlayedBy(game.getGameLength());
+				championSummary.incrementTimePlayedBy(game.getGameLength());
 				championSummary.updateFirstLastSeen(game.getEndTime());
 				championSummary.addGame(game);
 			}
@@ -241,7 +241,7 @@ public class PlayerStatsGui extends JFrame {
 				championsummaries.put(championSummary.getChampionName(), championSummary);
 			} else { //user has used this champion before
 				championSummary.updateTeamInfo(player);
-				championSummary.incrementMinutesPlayedBy(game.getGameLength());
+				championSummary.incrementTimePlayedBy(game.getGameLength());
 				championSummary.updateFirstLastSeen(game.getEndTime());
 				championSummary.addGame(game);
 			}
@@ -386,9 +386,9 @@ public class PlayerStatsGui extends JFrame {
 			total.incrementBlueGamesPlayedBy(championSummaries[i].getBlueTeamGames());
 			total.incrementRedGamesPlayedBy(championSummaries[i].getRedTeamGames());
 
-			data[i][3] = new Long(championSummaries[i].getMinutesPlayed());
-			total.incrementMinutesPlayedBy(championSummaries[i].getMinutesPlayed());
-			data[i][4] = new Double(championSummaries[i].getMinutesPlayed() / (double)championSummaries[i].getGamesPlayed());
+			data[i][3] = new Long(championSummaries[i].getTimePlayed());
+			total.incrementTimePlayedBy(championSummaries[i].getTimePlayed());
+			data[i][4] = new Double(championSummaries[i].getTimePlayed() / (double)championSummaries[i].getGamesPlayed());
 			data[i][5] = new Date(championSummaries[i].getFirstSeen());
 			data[i][6] = new Date(championSummaries[i].getLastSeen());
 			if (championSummaries[i].blueTeamGamesWithKnownOutcome() > 0) {
@@ -434,8 +434,8 @@ public class PlayerStatsGui extends JFrame {
 			footerData[0][1] = new Double(100d * (total.totalWins() / knownWinLossGames));
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
-		footerData[0][3] = new Long(total.getMinutesPlayed());
-		footerData[0][4] = new Double(total.getMinutesPlayed() / (double)total.getGamesPlayed());
+		footerData[0][3] = new Long(total.getTimePlayed());
+		footerData[0][4] = new Double(total.getTimePlayed() / (double)total.getGamesPlayed());
 		footerData[0][5] = new Date(total.getFirstSeen());
 		footerData[0][6] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
@@ -477,9 +477,42 @@ public class PlayerStatsGui extends JFrame {
 				setText((value == null) ? "" : DF.format(value));
 			}
 		};
+		doubleCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
+
+		DefaultTableCellRenderer msToMinutesCellRenderer = new DefaultTableCellRenderer() {
+
+			@Override
+			public void setValue(Object value) {
+				Long timePlayed = (Long)value;
+				setText(Long.toString(TimeUnit.MILLISECONDS.toMinutes(timePlayed.longValue())));
+			}
+		};
+		msToMinutesCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
+
+		DefaultTableCellRenderer avgGameTimeCellRenderer = new DefaultTableCellRenderer() {
+
+			final DecimalFormat DF = new DecimalFormat("#.###");
+
+			double msToMinutes(double ms) {
+				return ms / (1000 * 60);
+			}
+
+			@Override
+			public void setValue(Object value) {
+				Double timePlayed = (Double)value;
+				setText(DF.format(msToMinutes(timePlayed.doubleValue())));
+			}
+		};
+		avgGameTimeCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 
 		twf.getTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
 		twf.getFooterTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
+
+		twf.getTable().getColumnModel().getColumn(3).setCellRenderer(msToMinutesCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(3).setCellRenderer(msToMinutesCellRenderer);
+
+		twf.getTable().getColumnModel().getColumn(4).setCellRenderer(avgGameTimeCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(4).setCellRenderer(avgGameTimeCellRenderer);
 
 		DefaultTableCellRenderer dateCellRenderer = new DefaultTableCellRenderer() {
 			@Override
