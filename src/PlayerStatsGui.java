@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -365,7 +364,7 @@ public class PlayerStatsGui extends JFrame {
 
 		ChampionSummary[] championSummaries = jList.getSelectedValue().getChampionSummaries().values().toArray(new ChampionSummary[0]);
 
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "Avg Game Time", "First Seen", "Last Seen",
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Time Played", "Avg Game Time", "First Seen", "Last Seen",
 				"Blue Wins", "Red Wins"};
 		final Object[][] data = new Object[championSummaries.length][columnNames.length];
 
@@ -388,7 +387,7 @@ public class PlayerStatsGui extends JFrame {
 
 			data[i][3] = new Long(championSummaries[i].getTimePlayed());
 			total.incrementTimePlayedBy(championSummaries[i].getTimePlayed());
-			data[i][4] = new Double(championSummaries[i].getTimePlayed() / (double)championSummaries[i].getGamesPlayed());
+			data[i][4] = new Long((long) (championSummaries[i].getTimePlayed() / (double)championSummaries[i].getGamesPlayed()));
 			data[i][5] = new Date(championSummaries[i].getFirstSeen());
 			data[i][6] = new Date(championSummaries[i].getLastSeen());
 			if (championSummaries[i].blueTeamGamesWithKnownOutcome() > 0) {
@@ -435,7 +434,7 @@ public class PlayerStatsGui extends JFrame {
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
 		footerData[0][3] = new Long(total.getTimePlayed());
-		footerData[0][4] = new Double(total.getTimePlayed() / (double)total.getGamesPlayed());
+		footerData[0][4] = new Long((long) (total.getTimePlayed() / (double)total.getGamesPlayed()));
 		footerData[0][5] = new Date(total.getFirstSeen());
 		footerData[0][6] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
@@ -479,40 +478,54 @@ public class PlayerStatsGui extends JFrame {
 		};
 		doubleCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 
-		DefaultTableCellRenderer msToMinutesCellRenderer = new DefaultTableCellRenderer() {
+		DefaultTableCellRenderer timePlayedCellRenderer = new DefaultTableCellRenderer() {
+
+			private String formatTime(long milliseconds) {
+				final int days = (int)(milliseconds / (1000 * 60 * 60 * 24));
+				final int hours = (int)(milliseconds / (1000 * 60 * 60) % 24);
+				final int minutes = (int)(milliseconds / (1000 * 60) % 60);
+				final int seconds = (int)(milliseconds / 1000 % 60);
+				return (
+						(days < 10 ? "0" + days : Integer.toString(days)) + "d"
+						+ ":" + (hours < 10 ? "0" + hours : Integer.toString(hours)) + "h"
+						+ ":" + (minutes < 10 ? "0" + minutes : Integer.toString(minutes)) + "m"
+						+ ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds)) + "s"
+						);
+			}
 
 			@Override
 			public void setValue(Object value) {
 				Long timePlayed = (Long)value;
-				setText(Long.toString(TimeUnit.MILLISECONDS.toMinutes(timePlayed.longValue())));
+				setText(formatTime(timePlayed.longValue()));
 			}
 		};
-		msToMinutesCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 
-		DefaultTableCellRenderer avgGameTimeCellRenderer = new DefaultTableCellRenderer() {
+		DefaultTableCellRenderer gameTimeCellRenderer = new DefaultTableCellRenderer() {
 
-			final DecimalFormat DF = new DecimalFormat("#.###");
-
-			double msToMinutes(double ms) {
-				return ms / (1000 * 60);
+			private String formatTime(long milliseconds) {
+				final int minutes = (int)(milliseconds / (1000 * 60));
+				final int seconds = (int)(milliseconds / 1000 % 60);
+				return (
+						(minutes < 10 ? "0" + minutes : Integer.toString(minutes)) + "m"
+						+ ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds)) + "s"
+						);
 			}
 
 			@Override
 			public void setValue(Object value) {
-				Double timePlayed = (Double)value;
-				setText(DF.format(msToMinutes(timePlayed.doubleValue())));
+				Long timePlayed = (Long)value;
+				setText(formatTime(timePlayed.longValue()));
 			}
 		};
-		avgGameTimeCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 
 		twf.getTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
 		twf.getFooterTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
 
-		twf.getTable().getColumnModel().getColumn(3).setCellRenderer(msToMinutesCellRenderer);
-		twf.getFooterTable().getColumnModel().getColumn(3).setCellRenderer(msToMinutesCellRenderer);
+		twf.getTable().getColumnModel().getColumn(3).setCellRenderer(timePlayedCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(3).setCellRenderer(timePlayedCellRenderer);
 
-		twf.getTable().getColumnModel().getColumn(4).setCellRenderer(avgGameTimeCellRenderer);
-		twf.getFooterTable().getColumnModel().getColumn(4).setCellRenderer(avgGameTimeCellRenderer);
+		twf.getTable().getColumnModel().getColumn(4).setCellRenderer(gameTimeCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(4).setCellRenderer(gameTimeCellRenderer);
 
 		DefaultTableCellRenderer dateCellRenderer = new DefaultTableCellRenderer() {
 			@Override

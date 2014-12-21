@@ -52,7 +52,7 @@ public class AllyOrEnemyGui extends JFrame {
 
 	public void updateAllyTable() {
 		HashMap<String, ChampionSummary> map = getAllyMap();
-		final String[] columnNames = {"Champion", "Win %", "Games Played", "Minutes Played", "First Seen", "Last Seen",
+		final String[] columnNames = {"Champion", "Win %", "Games Played", "Time Played", "Avg Game Time", "First Seen", "Last Seen",
 				"Blue Wins", "Red Wins"};
 		final Object[][] data = new Object[map.size()][columnNames.length];
 
@@ -76,10 +76,11 @@ public class AllyOrEnemyGui extends JFrame {
 
 			data[i][3] = new Long(championSummary.getTimePlayed());
 			total.incrementTimePlayedBy(championSummary.getTimePlayed());
-			data[i][4] = new Date(championSummary.getFirstSeen());
-			data[i][5] = new Date(championSummary.getLastSeen());
+			data[i][4] = new Long((long) (championSummary.getTimePlayed() / (double)championSummary.getGamesPlayed()));
+			data[i][5] = new Date(championSummary.getFirstSeen());
+			data[i][6] = new Date(championSummary.getLastSeen());
 			if (championSummary.blueTeamGamesWithKnownOutcome() > 0) {
-				data[i][6] = championSummary.getBlueTeamWins()
+				data[i][7] = championSummary.getBlueTeamWins()
 						+ "/"
 						+ championSummary.blueTeamGamesWithKnownOutcome()
 						+ "  ("
@@ -87,7 +88,7 @@ public class AllyOrEnemyGui extends JFrame {
 						+ "%)";
 			}
 			if (championSummary.redTeamGamesWithKnownOutcome() > 0) {
-				data[i][7] = championSummary.getRedTeamWins()
+				data[i][8] = championSummary.getRedTeamWins()
 						+ "/"
 						+ championSummary.redTeamGamesWithKnownOutcome()
 						+ "  ("
@@ -122,10 +123,11 @@ public class AllyOrEnemyGui extends JFrame {
 		}
 		footerData[0][2] = new Integer(total.getGamesPlayed());
 		footerData[0][3] = new Long(total.getTimePlayed());
-		footerData[0][4] = new Date(total.getFirstSeen());
-		footerData[0][5] = new Date(total.getLastSeen());
+		footerData[0][4] = new Long((long) (total.getTimePlayed() / (double)total.getGamesPlayed()));
+		footerData[0][5] = new Date(total.getFirstSeen());
+		footerData[0][6] = new Date(total.getLastSeen());
 		if (total.blueTeamGamesWithKnownOutcome() > 0) {
-			footerData[0][6] = total.getBlueTeamWins()
+			footerData[0][7] = total.getBlueTeamWins()
 					+ "/"
 					+ total.blueTeamGamesWithKnownOutcome()
 					+ "  ("
@@ -133,7 +135,7 @@ public class AllyOrEnemyGui extends JFrame {
 					+ "%)";
 		}
 		if (total.redTeamGamesWithKnownOutcome() > 0) {
-			footerData[0][7] = total.getRedTeamWins()
+			footerData[0][8] = total.getRedTeamWins()
 					+ "/"
 					+ total.redTeamGamesWithKnownOutcome()
 					+ "  ("
@@ -146,6 +148,13 @@ public class AllyOrEnemyGui extends JFrame {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
+			@Override
+			public Class<?> getColumnClass(int column) {
+				if (data[0][column] != null) {
+					return data[0][column].getClass();
+				}
+				return String.class;
+			}
 		};
 
 		twf.setModel(model, footerModel);
@@ -156,6 +165,7 @@ public class AllyOrEnemyGui extends JFrame {
 				setText((value == null) ? "" : PlayerStatsGui.DF.format(value));
 			}
 		};
+		doubleCellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 
 		twf.getTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
 		twf.getFooterTable().getColumnModel().getColumn(1).setCellRenderer(doubleCellRenderer);
@@ -167,10 +177,56 @@ public class AllyOrEnemyGui extends JFrame {
 			}
 		};
 
-		for (i = 4; i < 6; i++) {
+		for (i = 5; i < 7; i++) {
 			twf.getTable().getColumnModel().getColumn(i).setCellRenderer(dateCellRenderer);
 			twf.getFooterTable().getColumnModel().getColumn(i).setCellRenderer(dateCellRenderer);
 		}
+
+		DefaultTableCellRenderer timePlayedCellRenderer = new DefaultTableCellRenderer() {
+
+			private String formatTime(long milliseconds) {
+				final int days = (int)(milliseconds / (1000 * 60 * 60 * 24));
+				final int hours = (int)(milliseconds / (1000 * 60 * 60) % 24);
+				final int minutes = (int)(milliseconds / (1000 * 60) % 60);
+				final int seconds = (int)(milliseconds / 1000 % 60);
+				return (
+						(days < 10 ? "0" + days : Integer.toString(days)) + "d"
+						+ ":" + (hours < 10 ? "0" + hours : Integer.toString(hours)) + "h"
+						+ ":" + (minutes < 10 ? "0" + minutes : Integer.toString(minutes)) + "m"
+						+ ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds)) + "s"
+						);
+			}
+
+			@Override
+			public void setValue(Object value) {
+				Long timePlayed = (Long)value;
+				setText(formatTime(timePlayed.longValue()));
+			}
+		};
+
+		DefaultTableCellRenderer gameTimeCellRenderer = new DefaultTableCellRenderer() {
+
+			private String formatTime(long milliseconds) {
+				final int minutes = (int)(milliseconds / (1000 * 60));
+				final int seconds = (int)(milliseconds / 1000 % 60);
+				return (
+						(minutes < 10 ? "0" + minutes : Integer.toString(minutes)) + "m"
+						+ ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds)) + "s"
+						);
+			}
+
+			@Override
+			public void setValue(Object value) {
+				Long timePlayed = (Long)value;
+				setText(formatTime(timePlayed.longValue()));
+			}
+		};
+
+		twf.getTable().getColumnModel().getColumn(3).setCellRenderer(timePlayedCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(3).setCellRenderer(timePlayedCellRenderer);
+
+		twf.getTable().getColumnModel().getColumn(4).setCellRenderer(gameTimeCellRenderer);
+		twf.getFooterTable().getColumnModel().getColumn(4).setCellRenderer(gameTimeCellRenderer);
 
 		twf.setAutoCreateRowSorter(true);
 
