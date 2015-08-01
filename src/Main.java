@@ -64,6 +64,8 @@ public class Main {
 
 			Game[] games = new Game[logFiles.length];
 
+			gui.getReadingFilesLabel().setText("Reading " + logFiles.length +  " Log Files...");
+
 			JProgressBar progressBar = gui.getProgressBar();
 			progressBar.setMaximum(logFiles.length);
 			for (int i = 0; i < logFiles.length; i++) {
