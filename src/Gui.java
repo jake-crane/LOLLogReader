@@ -23,6 +23,10 @@ public class Gui extends JFrame {
 		add(progressBar);
 	}
 
+	public JLabel getReadingFilesLabel() {
+		return readingFilesLabel;
+	}
+
 	public JProgressBar getProgressBar() {
 		return progressBar;
 	}
