@@ -39,7 +39,6 @@ public class PlayerStatsGui extends JFrame {
 	private TableWithFooter twf = new TableWithFooter();
 	private JScrollPane listScrollPane;
 	private JList<PlayerSummary> jList = new JList<PlayerSummary>();
-	private PlayerSummary[] playerSummaries;
 
 	private JRadioButton anyvAnyRadio = new JRadioButton("Any v Any");
 	private JRadioButton sixvSixRadio = new JRadioButton("6v6");
@@ -327,7 +326,7 @@ public class PlayerStatsGui extends JFrame {
 			}
 		}
 
-		playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
+		PlayerSummary[] playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
 
 		Arrays.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
 
