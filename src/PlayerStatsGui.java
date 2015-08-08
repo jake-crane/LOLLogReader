@@ -249,7 +249,7 @@ public class PlayerStatsGui extends JFrame {
 	/**
 	 * updateChampionTable will also be called when jList index gets set
 	 */
-	public void updatePlayerSummaries() {
+	public PlayerSummary[] getPLayersummaries() {
 		if (anyvAnyRadio.isSelected()) {
 			teamSizeFilter = new GameFilter() {
 				@Override
@@ -329,7 +329,11 @@ public class PlayerStatsGui extends JFrame {
 		PlayerSummary[] playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
 
 		Arrays.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+		return playerSummaries;
+	}
 
+	public void updatePlayerSummaries() {
+		PlayerSummary[] playerSummaries = getPLayersummaries();
 		if (playerSummaries.length == 0) {
 			//DefaultTableModel model = new DefaultTableModel(new String[][]{{}}, new String[][]{{}});
 			//twf.setModel(model, model);
