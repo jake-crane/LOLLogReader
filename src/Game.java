@@ -74,6 +74,21 @@ public class Game {
 		if (getBlueTeam().size() + getRedTeam().size() == 1) {
 			botGame = true;
 		}
+
+		if (getStartTime() == 0) {
+			System.err.println("Unable to read game start time. File: " + file.getAbsolutePath());
+		} else if (getEndTime() == 0) {
+			System.err.println("Unable to read game end time. File: " + file.getAbsolutePath());
+		} else if (getBlueTeam().size() + getRedTeam().size() == 0) {
+			System.err.println("Unable to read players. File: " + file.getAbsolutePath());
+		} else if (localPlayer == null) {
+			System.err.println("Unable to read local player. File: " + file.getAbsolutePath());
+		} else if (teamThatWon == -1) {
+			System.err.println("Unable to read winning team. File: " + file.getAbsolutePath());
+		} else if (netUID == 0) {
+			System.err.println("Unable to read netUID. File: " + file.getAbsolutePath());
+		}
+
 	}
 
 	public boolean listContainsPlayerWithName(ArrayList<Player> playerList, String name) {
