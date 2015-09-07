@@ -9,10 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -53,12 +51,13 @@ public class PlayerStatsGui extends JFrame {
 	private DatePicker fromDatePicker = new DatePicker();
 	private DatePicker toDatePicker = new DatePicker();
 
-	private GameFilter teamSizeFilter = null;
-	private GameFilter dateFilter = null;
-
 	private String lastSelectedPlayerName;
-
-	public PlayerStatsGui(final Game[] games) {
+	
+	private final PlayerSummaryCalculator playerSummaryCalculator;
+	
+	public PlayerStatsGui(final PlayerSummaryCalculator playerSummaryCalculator) {
+		
+		this.playerSummaryCalculator = playerSummaryCalculator;
 
 		setLayout(new GridBagLayout());
 
@@ -77,7 +76,7 @@ public class PlayerStatsGui extends JFrame {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						updatePlayerSummaries(games); //updateChampionTable will be called when playersummary index gets set
+						updatePlayerSummaries();
 					}
 				}
 			});
@@ -87,7 +86,7 @@ public class PlayerStatsGui extends JFrame {
 		showBotGamesCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries(games); //updateChampionTable will be called when playersummary index gets set
+				updatePlayerSummaries();
 			}
 		});
 
@@ -161,18 +160,18 @@ public class PlayerStatsGui extends JFrame {
 		c2.gridheight = 1;
 		add(twf, c2);
 
-		updatePlayerSummaries(games);
+		updatePlayerSummaries();
 
 		toDatePicker.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries(games); //updateChampionTable will be called when playersummary index gets set
+				updatePlayerSummaries();
 			}
 		});
 		fromDatePicker.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updatePlayerSummaries(games); //updateChampionTable will be called when playersummary index gets set
+				updatePlayerSummaries();
 			}
 		});
 
@@ -199,53 +198,9 @@ public class PlayerStatsGui extends JFrame {
 		fromDatePicker.setDate(firstGameDate);
 		fromDatePicker.setTimeofDayToZero();
 	}
-
-	public static void summarizePlayerForAllPlayers(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
-		PlayerSummary playerSummary = playerSummaries.get("(All Players)");
-		if (playerSummary == null) { //user does not exist create new and add to list with champ
-			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-			playerSummary = new PlayerSummary("(All Players)", championSummary);
-			playerSummaries.put(playerSummary.getName(), playerSummary);
-		} else { //user found get list of champions and add new champion info
-			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
-			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
-			if (championSummary == null) { //champion does not exist for this user
-				championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-				championsummaries.put(championSummary.getChampionName(), championSummary);
-			} else { //user has used this champion before
-				championSummary.updateTeamInfo(player);
-				championSummary.incrementTimePlayedBy(game.getGameLength());
-				championSummary.updateFirstLastSeen(game.getEndTime());
-				championSummary.addGame(game);
-			}
-		}
-	}
-
-	public static void summarizePlayer(Game game, Player player, HashMap<String, PlayerSummary> playerSummaries) {
-		PlayerSummary playerSummary = playerSummaries.get(player.getName());
-		if (playerSummary == null) { //user does not exist create new and add to list with champ
-			ChampionSummary championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-			playerSummary = new PlayerSummary(player.getName(), championSummary);
-			playerSummaries.put(playerSummary.getName(), playerSummary);
-		} else { //user found get list of champions and add new champion info
-			HashMap<String, ChampionSummary> championsummaries = playerSummary.getChampionSummaries();
-			ChampionSummary championSummary = championsummaries.get(player.getChampionName());
-			if (championSummary == null) { //champion does not exist for this user
-				championSummary = new ChampionSummary(player.getChampionName(), game, player.getTeam(), player.getGameResult());
-				championsummaries.put(championSummary.getChampionName(), championSummary);
-			} else { //user has used this champion before
-				championSummary.updateTeamInfo(player);
-				championSummary.incrementTimePlayedBy(game.getGameLength());
-				championSummary.updateFirstLastSeen(game.getEndTime());
-				championSummary.addGame(game);
-			}
-		}
-	}
-
-	/**
-	 * updateChampionTable will also be called when jList index gets set
-	 */
-	public PlayerSummary[] getPLayersummaries(Game[] games) {
+	
+	public GameFilter getTeamSizeFilter() {
+		GameFilter teamSizeFilter = null;
 		if (anyvAnyRadio.isSelected()) {
 			teamSizeFilter = new GameFilter() {
 				@Override
@@ -296,40 +251,32 @@ public class PlayerStatsGui extends JFrame {
 				}
 			};
 		}
-
-		dateFilter = new GameFilter() {
+		return teamSizeFilter;
+	}
+	
+	public GameFilter getDateFilter() {
+		return  new GameFilter() {
 			@Override
 			public boolean accept(Game game) {
 				return game.getStartTime() >= fromDatePicker.getDate().getTime()
 						&& game.getStartTime() < toDatePicker.getDate().getTime();
 			}
 		};
-
-		HashMap<String, PlayerSummary> playerSummaryHashMap = new HashMap<String, PlayerSummary>();
-		for (Game game : games) {
-			if (game.isBotGame() == showBotGamesCheckBox.isSelected()
-					&& teamSizeFilter.accept(game)
-					&& dateFilter.accept(game)
-					) {
-				for (Player player : game.getBlueTeam()) {
-					summarizePlayer(game, player, playerSummaryHashMap);
-					summarizePlayerForAllPlayers(game, player, playerSummaryHashMap);
-				}
-				for (Player player : game.getRedTeam()) {
-					summarizePlayer(game, player, playerSummaryHashMap);
-					summarizePlayerForAllPlayers(game, player, playerSummaryHashMap);
-				}
-			}
-		}
-
-		PlayerSummary[] playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
-
-		Arrays.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
-		return playerSummaries;
 	}
 
-	public void updatePlayerSummaries(Game[] games) {
-		PlayerSummary[] playerSummaries = getPLayersummaries(games);
+	public GameFilter getGameFilter() {
+		return new GameFilter() {
+			@Override
+			public boolean accept(Game game) {
+				return game.isBotGame() == showBotGamesCheckBox.isSelected()
+						&& getTeamSizeFilter().accept(game)
+						&& getDateFilter().accept(game);
+			}
+		};
+	}
+	
+	public void updatePlayerSummaries() {
+		PlayerSummary[] playerSummaries = playerSummaryCalculator.createPlayerSummaries(getGameFilter());
 		if (playerSummaries.length == 0) {
 			//DefaultTableModel model = new DefaultTableModel(new String[][]{{}}, new String[][]{{}});
 			//twf.setModel(model, model);
@@ -354,7 +301,6 @@ public class PlayerStatsGui extends JFrame {
 		if (jList.getSelectedIndex() == -1) {
 			jList.setSelectedIndex(0);
 		}
-
 	}
 
 	public void updateChampionTable() {
@@ -545,10 +491,6 @@ public class PlayerStatsGui extends JFrame {
 		pack();
 		twf.adjustColumns();
 		pack();
-	}
-
-	private static interface GameFilter {
-		abstract boolean accept(Game game);
 	}
 
 	private static class MyMenu extends JPopupMenu {

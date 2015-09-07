@@ -79,7 +79,7 @@ public class Main {
 
 			long guiStartTime = System.currentTimeMillis();
 
-			PlayerStatsGui playerStatsGui = new PlayerStatsGui(games);
+			PlayerStatsGui playerStatsGui = new PlayerStatsGui(new PlayerSummaryCalculator(games));
 			playerStatsGui.pack();
 			playerStatsGui.setLocationRelativeTo(null);
 
