@@ -1,22 +1,9 @@
-import java.util.Comparator;
 import java.util.HashMap;
 
-public class PlayerSummary {
+public class PlayerSummary implements Comparable<PlayerSummary> {
 
 	private String name;
 	private HashMap<String, ChampionSummary> championSummaries = new HashMap<String, ChampionSummary>();
-
-	public static final Comparator<PlayerSummary> GAMES_PLAYED_COMPARATOR = new Comparator<PlayerSummary>() {
-		@Override
-		public int compare(PlayerSummary p1, PlayerSummary p2) {
-			if (p1.championSummaries.size() < p2.getChampionSummaries().size()) {
-				return 1;
-			} else if (p1.championSummaries.size() > p2.getChampionSummaries().size()) {
-				return -1;
-			}
-			return 0;
-		}
-	};
 
 	public PlayerSummary(String playerName, ChampionSummary firstFoundChampionSummary) {
 		this.name = playerName;
@@ -34,6 +21,16 @@ public class PlayerSummary {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public int compareTo(PlayerSummary playerSummary) {
+		if (championSummaries.size() < playerSummary.getChampionSummaries().size()) {
+			return 1;
+		} else if (championSummaries.size() > playerSummary.getChampionSummaries().size()) {
+			return -1;
+		}
+		return 0;
 	}
 
 }

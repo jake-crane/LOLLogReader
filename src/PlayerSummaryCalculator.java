@@ -69,7 +69,7 @@ public class PlayerSummaryCalculator {
 
 		PlayerSummary[] playerSummaries = playerSummaryHashMap.values().toArray(new PlayerSummary[0]);
 
-		Arrays.sort(playerSummaries, PlayerSummary.GAMES_PLAYED_COMPARATOR);
+		Arrays.sort(playerSummaries);
 		return playerSummaries;
 	}
 
