@@ -55,6 +55,46 @@ public class PlayerStatsGui extends JFrame {
 	
 	private final PlayerSummaryCalculator playerSummaryCalculator;
 	
+	private final GameFilter teamSizeFilter = new GameFilter() {
+		@Override
+		public boolean accept(Game game) {
+			if (anyvAnyRadio.isSelected()) {
+				return true;
+			} else if (sixvSixRadio.isSelected()) {
+				return game.getBlueTeam().size() == 6 && game.getRedTeam().size() == 6;
+			} else if (fivevFiveRadio.isSelected()) {
+				return game.getBlueTeam().size() == 5 && game.getRedTeam().size() == 5;
+			} else if (fourvFourRadio.isSelected()) {
+				return game.getBlueTeam().size() == 4 && game.getRedTeam().size() == 4;
+			} else if (threevThreeRadio.isSelected()) {
+				return game.getBlueTeam().size() == 3 && game.getRedTeam().size() == 3;
+			} else if (twovTwoRadio.isSelected()) {
+				return game.getBlueTeam().size() == 2 && game.getRedTeam().size() == 2;
+			} else if (onevOneRadio.isSelected()) {
+				return game.getBlueTeam().size() == 1 && game.getRedTeam().size() == 1;
+			}
+			return false;
+		}
+	};
+	
+	private final GameFilter dateFilter = new GameFilter() {
+		@Override
+		public boolean accept(Game game) {
+			return game.getStartTime() >= fromDatePicker.getDate().getTime()
+					&& game.getStartTime() < toDatePicker.getDate().getTime();
+		}
+	};
+	
+	//filter based on bot games, team size and date
+	private final GameFilter gameFilter = new GameFilter() {
+		@Override
+		public boolean accept(Game game) {
+			return game.isBotGame() == showBotGamesCheckBox.isSelected()
+					&& dateFilter.accept(game)
+					&& teamSizeFilter.accept(game);
+		}
+	};
+	
 	public PlayerStatsGui(final PlayerSummaryCalculator playerSummaryCalculator) {
 		
 		this.playerSummaryCalculator = playerSummaryCalculator;
@@ -199,84 +239,8 @@ public class PlayerStatsGui extends JFrame {
 		fromDatePicker.setTimeofDayToZero();
 	}
 	
-	public GameFilter getTeamSizeFilter() {
-		GameFilter teamSizeFilter = null;
-		if (anyvAnyRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return true;
-				}
-			};
-		} else if (sixvSixRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 6 && game.getRedTeam().size() == 6;
-				}
-			};
-		} else if (fivevFiveRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 5 && game.getRedTeam().size() == 5;
-				}
-			};
-		} else if (fourvFourRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 4 && game.getRedTeam().size() == 4;
-				}
-			};
-		} else if (threevThreeRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 3 && game.getRedTeam().size() == 3;
-				}
-			};
-		} else if (twovTwoRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 2 && game.getRedTeam().size() == 2;
-				}
-			};
-		} else if (onevOneRadio.isSelected()) {
-			teamSizeFilter = new GameFilter() {
-				@Override
-				public boolean accept(Game game) {
-					return game.getBlueTeam().size() == 1 && game.getRedTeam().size() == 1;
-				}
-			};
-		}
-		return teamSizeFilter;
-	}
-	
-	public GameFilter getDateFilter() {
-		return  new GameFilter() {
-			@Override
-			public boolean accept(Game game) {
-				return game.getStartTime() >= fromDatePicker.getDate().getTime()
-						&& game.getStartTime() < toDatePicker.getDate().getTime();
-			}
-		};
-	}
-
-	public GameFilter getGameFilter() {
-		return new GameFilter() {
-			@Override
-			public boolean accept(Game game) {
-				return game.isBotGame() == showBotGamesCheckBox.isSelected()
-						&& getTeamSizeFilter().accept(game)
-						&& getDateFilter().accept(game);
-			}
-		};
-	}
-	
 	public void updatePlayerSummaries() {
-		PlayerSummary[] playerSummaries = playerSummaryCalculator.createPlayerSummaries(getGameFilter());
+		PlayerSummary[] playerSummaries = playerSummaryCalculator.createPlayerSummaries(gameFilter);
 		if (playerSummaries.length == 0) {
 			//DefaultTableModel model = new DefaultTableModel(new String[][]{{}}, new String[][]{{}});
 			//twf.setModel(model, model);
