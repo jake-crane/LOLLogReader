@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,43 +100,33 @@ public class Game {
 		}
 		return false;
 	}
+	
+	private void setGameResultForTeam(GameResult gameResult, List<Player> team) {
+		for (Player player : team) {
+			player.setGameResult(gameResult);
+		}
+	}
 
 	private void updateTeamsWinLoss(String line) {
 		if (line.contains("EXITCODE_WIN")) {
 			if (localPlayer.getTeam() == BLUE_TEAM) {
 				teamThatWon = BLUE_TEAM;
-				for (Player player : blueTeam) {
-					player.setGameResult(GameResult.WON);
-				}
-				for (Player player : redTeam) {
-					player.setGameResult(GameResult.LOST);
-				}
+				setGameResultForTeam(GameResult.WON, blueTeam);
+				setGameResultForTeam(GameResult.LOST, redTeam);
 			} else if (localPlayer.getTeam() == RED_TEAM) {
 				teamThatWon = RED_TEAM;
-				for (Player player : redTeam) {
-					player.setGameResult(GameResult.WON);
-				}
-				for (Player player : blueTeam) {
-					player.setGameResult(GameResult.LOST);
-				}
+				setGameResultForTeam(GameResult.LOST, blueTeam);
+				setGameResultForTeam(GameResult.WON, redTeam);
 			}
 		} else if (line.contains("EXITCODE_LOSE")) {
 			if (localPlayer.getTeam() == BLUE_TEAM) {
 				teamThatWon = RED_TEAM;
-				for (Player player : redTeam) {
-					player.setGameResult(GameResult.WON);
-				}
-				for (Player player : blueTeam) {
-					player.setGameResult(GameResult.LOST);
-				}
+				setGameResultForTeam(GameResult.WON, redTeam);
+				setGameResultForTeam(GameResult.LOST, blueTeam);
 			} else if (localPlayer.getTeam() == RED_TEAM) {
 				teamThatWon = BLUE_TEAM;
-				for (Player player : redTeam) {
-					player.setGameResult(GameResult.LOST);
-				}
-				for (Player player : blueTeam) {
-					player.setGameResult(GameResult.WON);
-				}
+				setGameResultForTeam(GameResult.LOST, redTeam);
+				setGameResultForTeam(GameResult.WON, blueTeam);
 			}
 		}
 	}
